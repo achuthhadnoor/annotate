@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import Layout from "../components/Layout";
+import { useAppState, useUpdateAppState } from "../context/appContext";
 
 const IndexPage = () => {
+  const appState = useAppState();
+  const updateAppState = useUpdateAppState();
   const tools = [
     {
       id: "text",
@@ -260,11 +263,12 @@ const IndexPage = () => {
         {tools.map((tool) => (
           <button
             key={`tool-${tool.id}`}
-            className="toolbar-icon"
+            className={`toolbar-icon ${appState.selectedTool === tool.id && 'active'}`}
             id={tool.id}
             title={tool.title}
             onClick={() => {
-              onSayHiClick(tool.title);
+              // onSayHiClick(tool.title);
+              updateAppState({selectedTool:tool.id})
             }}
           >
             {tool.icon()}

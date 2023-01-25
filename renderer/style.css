@@ -9,6 +9,12 @@ html {
 * {
   outline: none;
 }
+#__next{
+  position:absolute;
+  height:100%;
+  width:100%;
+  overflow:hidden;
+}
 button{
   padding:0px;
   background:inherit;
@@ -84,6 +90,7 @@ svg {
   -webkit-app-region: no-drag;
   appearance: none;
   height: 0px;
+  border-radius:25px;
   /* border-top-right-radius: 20%;
   border-bottom-right-radius: 20%; */
   /* border-top-left-radius: 50%;
@@ -122,8 +129,8 @@ svg {
     border: 2px solid #222;
   }
   .slider::-webkit-slider-thumb {
-    background-color: rgb(0, 0, 0);
-    border: 5px solid rgb(180, 163, 255);
+    background-color: #555;
+    /* border: 5px solid rgb(180, 163, 255); */
   }
 }
 
@@ -140,10 +147,12 @@ svg {
   }
   .slider {
     background-color: transparent;
-    border: 2px solid #fff;
+    height:5px;
+    background-color: #aaa;
   }
   .slider::-webkit-slider-thumb {
-    background-color: rgb(255, 255, 255);
-    border: 5px solid rgb(180, 163, 255);
+    background-color: #bbb;
+    /* border: 5px solid #8772ee; */
+    box-shadow: 10px 10px 200px #000;
   }
 }

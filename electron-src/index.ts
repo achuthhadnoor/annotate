@@ -84,7 +84,7 @@ const initCanvasWindow = ()=>{
       });
 
   canvasWindow.loadURL(url);
-  // canvasWindow.webContents.openDevTools({mode:"detach"});
+  canvasWindow.webContents.openDevTools({mode:"detach"});
   // canvasWindow.setContentProtection(true);
   canvasWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   canvasWindow.setIgnoreMouseEvents(canvasPassThrough, { forward: canvasPassThrough });
