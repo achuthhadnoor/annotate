@@ -1,0 +1,149 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+* {
+  outline: none;
+}
+button{
+  padding:0px;
+  background:inherit;
+  border:none;
+}
+.separator {
+  display: inline-block;
+  height: 20px;
+  width: 3px;
+  background: rgb(117 118 175 / 30%);
+  border-radius: 5px;
+}
+
+#toolbar {
+  user-select: none;
+  -webkit-app-region: drag;
+  display: flex;
+  gap: 15px;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.colors {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 0px 5px;
+}
+
+.color {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 12px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.color::-webkit-color-swatch {
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+#primary-color {
+  background: #d479ff;
+}
+
+#secondary-color {
+  background: #ffae64;
+}
+
+#ternary-color {
+  background: #62ffa1;
+}
+
+svg {
+  padding: 5px;
+  transform: scale(1.1);
+}
+
+.active {
+  border-radius: 5px;
+}
+
+.slider {
+  -webkit-app-region: no-drag;
+  appearance: none;
+  height: 0px;
+  /* border-top-right-radius: 20%;
+  border-bottom-right-radius: 20%; */
+  /* border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%; */
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: rgb(225, 182, 255);
+  cursor: pointer;
+  border-radius: 50px;
+}
+.canvas-draw {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+@media (prefers-color-scheme: light) {
+  .toolbar-icon:hover {
+    color: #000;
+  }
+  .toolbar-icon {
+    color: #999;
+  }
+
+  .active {
+    color: #000000;
+  }
+
+  .slider {
+    background-color: transparent;
+    border: 2px solid #222;
+  }
+  .slider::-webkit-slider-thumb {
+    background-color: rgb(0, 0, 0);
+    border: 5px solid rgb(180, 163, 255);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .toolbar-icon:hover {
+    color: #fff;
+  }
+  .toolbar-icon {
+    color: rgb(159, 159, 159);
+  }
+  .active {
+    /* background: rgb(117 118 175 / 30%); */
+    color: #ffffff;
+  }
+  .slider {
+    background-color: transparent;
+    border: 2px solid #fff;
+  }
+  .slider::-webkit-slider-thumb {
+    background-color: rgb(255, 255, 255);
+    border: 5px solid rgb(180, 163, 255);
+  }
+}
