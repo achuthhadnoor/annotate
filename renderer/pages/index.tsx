@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import Layout from "../components/Layout";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 
 const IndexPage = () => {
-  const { selectedTool, stroke } = useAppState();
+  const appState = useAppState();
   const updateAppState = useUpdateAppState();
   const tools = [
     // {
@@ -221,8 +222,12 @@ const IndexPage = () => {
             console.log(e);
           }}
           type="color"
-          value="#D479FF"
-          className="color"
+          value={appState.primaryColor}
+          className={
+            appState.activeColor === appState.primaryColor
+              ? "color border-2 border-neutral-50"
+              : "color"
+          }
           id="primary-color"
         />
         <input
@@ -230,8 +235,12 @@ const IndexPage = () => {
             console.log(e);
           }}
           type="color"
-          value="#FFAE64"
-          className="color"
+          value={appState.secondaryColor}
+          className={
+            appState.activeColor === appState.secondaryColor
+              ? "color border-2 border-neutral-50"
+              : "color"
+          }
           id="secondary-color"
         />
         <input
@@ -239,8 +248,12 @@ const IndexPage = () => {
             console.log(e);
           }}
           type="color"
-          value="#62FFA1"
-          className="color"
+          value={appState.ternaryColor}
+          className={
+            appState.activeColor === appState.ternaryColor
+              ? "color border-2 border-neutral-50"
+              : "color"
+          }
           id="ternary-color"
         />
       </div>
@@ -253,7 +266,9 @@ const IndexPage = () => {
         {tools.map((tool) => (
           <button
             key={`tool-${tool.id}`}
-            className={`toolbar-icon ${selectedTool === tool.id && "active"}`}
+            className={`toolbar-icon ${
+              appState.selectedTool === tool.id && "active"
+            }`}
             id={tool.id}
             title={tool.title}
             onClick={() => {
@@ -284,6 +299,11 @@ const IndexPage = () => {
       </>
     );
   };
+
+  useEffect(() => {
+    return () => {};
+  }, [appState]);
+
   return (
     <Layout>
       <div id="toolbar">

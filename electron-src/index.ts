@@ -1,16 +1,18 @@
-import { app, ipcMain, IpcMainEvent } from "electron";
+import { app, dialog, ipcMain, IpcMainEvent } from "electron";
 import prepareNext from "electron-next";
 import { initializeTray } from "./tray";
 import { windowManager } from "./windows/windowManager";
 import "./windows/load";
 
-(async () => {
-  await app.whenReady();
+if (app.dock) app.dock.hide();
+
+app.whenReady().then(async () => {
   await prepareNext("./renderer");
   initializeTray();
+  dialog.showErrorBox("error", "");
   windowManager.main?.open();
   windowManager.canvas?.open();
-})();
+});
 
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);

@@ -15,6 +15,7 @@
 
 # production
 /dist
+/sample
 
 # misc
 .DS_Store

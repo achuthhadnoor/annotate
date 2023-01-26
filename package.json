@@ -4,6 +4,7 @@
   "private": true,
   "main": "main/index.js",
   "productName": "Annotate",
+  "description": "A small utility app to boost your video calls",
   "scripts": {
     "clean": "rimraf dist main renderer/out renderer/.next",
     "dev": "npm run build-electron && electron .",
@@ -26,10 +27,13 @@
     "@types/node": "^14.14.6",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.9",
+    "autoprefixer": "^10.4.13",
     "electron": "^13",
     "electron-builder": "^23.0.3",
     "next": "latest",
+    "postcss": "^8.4.21",
     "rimraf": "^3.0.0",
+    "tailwindcss": "^3.2.4",
     "typescript": "^4.0.5"
   },
   "build": {
