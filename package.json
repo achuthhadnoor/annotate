@@ -1,6 +1,6 @@
 {
-  "name":"annotate",
-  "version":"0.0.1",
+  "name": "annotate",
+  "version": "0.0.1",
   "private": true,
   "main": "main/index.js",
   "productName": "Annotate",
@@ -17,8 +17,10 @@
   "dependencies": {
     "electron-next": "^3.1.5",
     "electron-util": "^0.17.2",
+    "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "roughjs": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^14.14.6",

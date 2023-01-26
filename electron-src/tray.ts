@@ -1,7 +1,7 @@
 import { Menu, Tray } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 import { join } from "path";
-import { togglePassThrough, toggleWindow } from ".";
+import { windowManager } from "./windows/windowManager";
 
 let tray: Tray | null = null;
 // let active = false;
@@ -14,33 +14,32 @@ const getContextMenu = () => {
   const template: MenuItemConstructorOptions[] = [
     {
       label: "Toggle Annotate",
-      click:()=>{
-        toggleWindow()
-      }
+      click: () => {
+        windowManager.main?.toggleView();
+      },
     },
     {
-      label:"Activate",
-      click:()=>{
-        togglePassThrough()
-      }
+      label: "Activate",
+      click: () => {
+        windowManager.canvas?.clickThrough();
+      },
     },
     {
-        type:"separator"
+      type: "separator",
     },
     {
-        role:"about"
+      role: "about",
     },
     {
-        role:"quit"
-    }
+      role: "quit",
+    },
   ];
-   return Menu.buildFromTemplate(template);
+  return Menu.buildFromTemplate(template);
 };
 
 export const initializeTray = () => {
-  tray = new Tray(join(__dirname,'../build/annotateTemplate.png')
-    );
-//   tray.setTitle("◉"); // ◎
+  tray = new Tray(join(__dirname, "../build/annotateTemplate.png"));
+  //   tray.setTitle("◉"); // ◎
   tray.setToolTip("lapse");
   tray.setContextMenu(getContextMenu());
 };

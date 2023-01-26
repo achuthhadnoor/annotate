@@ -1,107 +1,176 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useAppState } from "../context/appContext";
+import getStroke from "perfect-freehand";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import Rough from "roughjs/bundled/rough.cjs";
+import { useAppState, useUpdateAppState } from "../context/appContext";
 import { ICanvasTools } from "../interfaces";
 
 export default function Canvas() {
   const appState = useAppState();
   const [toolType, setToolType] = useState<ICanvasTools>("brush");
   const [stroke, setStroke] = useState<number>(3);
-  const [canUndo, setCanUndo] = useState<boolean>(false);
-  const [canRedo, setReturn] = useState<boolean>(false);
-  const canvasRef = useRef(null);
-  const ctxRef = useRef(null);
-  const canvasOffSetX = useRef(null);
-  const canvasOffSetY = useRef(null);
-  const startX = useRef(null);
-  const startY = useRef(null);
+  const [elements, setElements] = useState([]);
+  const [drawing, setDrawing] = useState(false);
+  // const [canUndo, setCanUndo] = useState<boolean>(false);
+  // const [canRedo, setReturn] = useState<boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const updateAppState = useUpdateAppState();
 
-  const [isDrawing, setIsDrawing] = useState(false);
+  const generator = Rough.generator();
 
-  const startDrawingRectangle = ({nativeEvent}) => {
-    nativeEvent.preventDefault();
-    nativeEvent.stopPropagation();
-
-    startX.current = nativeEvent.clientX - canvasOffSetX.current;
-    startY.current = nativeEvent.clientY - canvasOffSetY.current;
-
-    setIsDrawing(true);
-};
-
-const drawRectangle = ({nativeEvent}) => {
-    if (!isDrawing) {
-        return;
+  const createElement = (
+    id,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    type
+  ) => {
+    let roughElement = generator.line(x1, y1, x2, y2, {
+      stroke: "cyan",
+    });
+    switch (type) {
+      case "rectangle":
+      case "line":
+        roughElement =
+          type === "rectangle"
+            ? generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
+                stroke: "cyan",
+              })
+            : generator.line(x1, y1, x2, y2, {
+                stroke: "cyan",
+              });
+        return { x1, y1, x2, y2, type, roughElement };
+      case "brush":
+        return { id, type, points: [{ x: x1, y: y1 }] };
+      case "text":
+        return { id, x1, y1, type, text: "Hello world" };
+      default:
+        throw new Error("unknow tool");
+        break;
     }
+  };
 
-    nativeEvent.preventDefault();
-    nativeEvent.stopPropagation();
+  const handleMouseDown = (e: { clientX: any; clientY: any }) => {
+    setDrawing(true);
+    const { clientX, clientY } = e;
+    const index = elements.length;
+    const element = createElement(
+      index,
+      clientX,
+      clientY,
+      clientX,
+      clientY,
+      toolType
+    );
+    setElements((prvState) => [...prvState, element]);
+  };
+  const handleMouseMove = (e: { clientX: any; clientY: any }) => {
+    if (!drawing) return;
+    const index = elements.length - 1;
+    const { x1, y1 } = elements[index];
+    const { clientX, clientY } = e;
 
-    const newMouseX = nativeEvent.clientX - canvasOffSetX.current;
-    const newMouseY = nativeEvent.clientY - canvasOffSetY.current;
+    const elementsCopy = [...elements];
+    switch (toolType) {
+      case "line":
+      case "rectangle":
+        elementsCopy[index] = createElement(
+          index,
+          x1,
+          y1,
+          clientX,
+          clientY,
+          toolType
+        );
+        break;
+      case "brush":
+        elementsCopy[index].points = [
+          ...elements[index].points,
+          { x: clientX, y: clientY },
+        ];
+        break;
 
-    const rectWidth = newMouseX - startX.current;
-    const rectHeight = newMouseY - startY.current;
+      default:
+        break;
+    }
+    setElements(elementsCopy);
+  };
+  const handleMouseLeave = () => {
+    setDrawing(false);
+  };
+  const clearCanvas = () => {
+    ctxRef.current?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    setElements([]);
+  };
 
-    ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  function getSvgPathFromStroke(stroke) {
+    if (!stroke.length) return "";
 
-    ctxRef.current.strokeRect(startX.current, startY.current, rectWidth, rectHeight);
-};
+    const d = stroke.reduce(
+      (acc, [x0, y0], i, arr) => {
+        const [x1, y1] = arr[(i + 1) % arr.length];
+        acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+        return acc;
+      },
+      ["M", ...stroke[0], "Q"]
+    );
+    d.push("Z");
+    return d.join(" ");
+  }
 
-const stopDrawingRectangle = () => {
-    setIsDrawing(false);
-};
+  const drawElement = (roughCanvas, { type,x1,y1, roughElement, points, text }) => {
+    switch (type) {
+      case "line":
+      case "rectangle":
+        roughCanvas.draw(roughElement);
+        break;
+      case "brush":
+        const stroke = getSvgPathFromStroke(getStroke(points, { size: 3 }));
+        ctxRef.current.fill(new Path2D(stroke));
+        break;
+      case "text":
+        ctxRef.current.font = "16px sans-serif";
+        ctxRef.current.fillText(text, x1,y1);
+        break;
+      default:
+        break;
+    }
+  };
 
   useEffect(() => {
-    const canvas: HTMLCanvasElement = canvasRef?.current;
-    if (canvas) {
-      canvas.height = window.innerHeight;
-      canvas.width = window.innerWidth;
-      const canvasctx = canvas?.getContext("2d");
-      canvasctx.lineCap = "round";
-      canvasctx.strokeStyle = "cyan";
-      canvasctx.lineWidth = 2;
-      ctxRef.current = canvasctx;
-      const canvasOffset = canvas.getBoundingClientRect();
-      canvasOffSetX.current = canvasOffset.top;
-      canvasOffSetY.current = canvasOffset.left;
+    if (window) {
+      canvasRef.current.width = window.innerWidth;
+      canvasRef.current.height = window.innerHeight;
+      const canvas = canvasRef.current;
+      ctxRef.current = canvas.getContext("2d");
+      const roughCanvas = Rough.canvas(canvas);
+      elements.map((element) => drawElement(roughCanvas, element));
     }
-  }, []);
-
-  // useEffect(() => {
-  //   if(canvasRef){
-  //     const canvas: HTMLCanvasElement = canvasRef?.current;
-  //     const canvasctx = canvas?.getContext('2d');
-  //   }
-  //   if(window){
-  //     window.addEventListener('mousemove',()=>{
-  //       // console.log('====================================');
-  //       // console.log("moved");
-  //       // console.log('====================================');
-  //     })
-  //   }
-  //   return () => {
-  //     if(window){
-  //       window.removeEventListener("mousemove",()=>{
-  //       })
-  //       window.removeEventListener("keyDown",()=>{
-  //       })
-  //     }
-  //   }
-  // }, [])
+  }, [elements]);
 
   useEffect(() => {
-    console.log("====================================");
-    console.log(appState);
-    console.log("====================================");
+    if (appState.selectedTool === "clear") {
+      clearCanvas();
+      updateAppState({ selectedTool: toolType });
+      return;
+    }
+    setToolType(appState.selectedTool);
   }, [appState]);
 
   return (
     <canvas
       ref={canvasRef}
-      // className="canvas-draw"
-      onMouseDown={startDrawingRectangle}
-      onMouseMove={drawRectangle}
-      onMouseUp={stopDrawingRectangle}
-      onMouseLeave={stopDrawingRectangle}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseLeave}
+      onMouseLeave={handleMouseLeave}
     />
   );
 }

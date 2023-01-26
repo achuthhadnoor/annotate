@@ -351,7 +351,9 @@ const IndexPage = () => {
             />
           </svg>
         </div>
-        <div className="toolbar-icon">
+        <div className="toolbar-icon" onClick={()=>{
+          updateAppState({selectedTool:'clear'})
+        }}>
           <svg
             width="20"
             height="20"
