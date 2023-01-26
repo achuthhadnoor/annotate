@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext } from "react";
 import { useSyncStorage } from "../hooks/syncStorageHook";
 
 const AppContext = createContext(null);

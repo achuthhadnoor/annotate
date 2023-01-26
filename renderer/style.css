@@ -9,16 +9,16 @@ html {
 * {
   outline: none;
 }
-#__next{
-  position:absolute;
-  height:100%;
-  width:100%;
-  overflow:hidden;
+#__next {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
-button{
-  padding:0px;
-  background:inherit;
-  border:none;
+button {
+  padding: 0px;
+  background: inherit;
+  border: none;
 }
 .separator {
   display: inline-block;
@@ -32,7 +32,7 @@ button{
   user-select: none;
   -webkit-app-region: drag;
   display: flex;
-  gap: 15px;
+  gap: 20px;
   position: absolute;
   height: 100%;
   width: 100%;
@@ -90,7 +90,7 @@ svg {
   -webkit-app-region: no-drag;
   appearance: none;
   height: 0px;
-  border-radius:25px;
+  border-radius: 25px;
   /* border-top-right-radius: 20%;
   border-bottom-right-radius: 20%; */
   /* border-top-left-radius: 50%;
@@ -147,7 +147,7 @@ svg {
   }
   .slider {
     background-color: transparent;
-    height:5px;
+    height: 5px;
     background-color: #aaa;
   }
   .slider::-webkit-slider-thumb {

@@ -1,30 +1,28 @@
-import { useEffect } from "react";
-import Link from "next/link";
 import Layout from "../components/Layout";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 
 const IndexPage = () => {
-  const appState = useAppState();
+  const { selectedTool, stroke } = useAppState();
   const updateAppState = useUpdateAppState();
   const tools = [
-    {
-      id: "text",
-      title: "Text",
-      icon: () => (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.51278 14.5H1.53551L4.5483 5.77273H6.92614L9.93466 14.5H7.95739L5.77131 7.76705H5.70312L3.51278 14.5ZM3.3892 11.0696H8.05966V12.5099H3.3892V11.0696ZM12.8175 14.6236C12.3999 14.6236 12.0277 14.5511 11.701 14.4062C11.3743 14.2585 11.1158 14.0412 10.9254 13.7543C10.7379 13.4645 10.6442 13.1037 10.6442 12.6719C10.6442 12.3082 10.7109 12.0028 10.8445 11.7557C10.978 11.5085 11.1598 11.3097 11.3899 11.1591C11.62 11.0085 11.8814 10.8949 12.174 10.8182C12.4695 10.7415 12.7791 10.6875 13.103 10.6562C13.4837 10.6165 13.7905 10.5795 14.0234 10.5455C14.2564 10.5085 14.4254 10.4545 14.5305 10.3835C14.6357 10.3125 14.6882 10.2074 14.6882 10.0682V10.0426C14.6882 9.77273 14.603 9.56392 14.4325 9.41619C14.2649 9.26847 14.0263 9.1946 13.7166 9.1946C13.3899 9.1946 13.13 9.26705 12.9368 9.41193C12.7436 9.55398 12.6158 9.73295 12.5533 9.94886L10.8743 9.8125C10.9595 9.41477 11.1271 9.07102 11.3771 8.78125C11.6271 8.48864 11.9496 8.2642 12.3445 8.10795C12.7422 7.94886 13.2024 7.86932 13.7251 7.86932C14.0888 7.86932 14.4368 7.91193 14.7692 7.99716C15.1044 8.08239 15.4013 8.21449 15.6598 8.39347C15.9212 8.57244 16.1271 8.80256 16.2777 9.08381C16.4283 9.36222 16.5036 9.69602 16.5036 10.0852V14.5H14.782V13.5923H14.7308C14.6257 13.7969 14.4851 13.9773 14.3089 14.1335C14.1328 14.2869 13.9212 14.4077 13.674 14.4957C13.4268 14.581 13.1413 14.6236 12.8175 14.6236ZM13.3374 13.3707C13.6044 13.3707 13.8402 13.3182 14.0447 13.2131C14.2493 13.1051 14.4098 12.9602 14.5263 12.7784C14.6428 12.5966 14.701 12.3906 14.701 12.1605V11.4659C14.6442 11.5028 14.5661 11.5369 14.4666 11.5682C14.37 11.5966 14.2607 11.6236 14.1385 11.6491C14.0163 11.6719 13.8942 11.6932 13.772 11.7131C13.6499 11.7301 13.5391 11.7457 13.4396 11.7599C13.2266 11.7912 13.0405 11.8409 12.8814 11.9091C12.7223 11.9773 12.5987 12.0696 12.5107 12.1861C12.4226 12.2997 12.3786 12.4418 12.3786 12.6122C12.3786 12.8594 12.468 13.0483 12.647 13.179C12.8288 13.3068 13.0589 13.3707 13.3374 13.3707Z"
-            fill="currentColor"
-          />
-        </svg>
-      ),
-    },
+    // {
+    //   id: "text",
+    //   title: "Text",
+    //   icon: () => (
+    //     <svg
+    //       width="20"
+    //       height="20"
+    //       viewBox="0 0 20 20"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <path
+    //         d="M3.51278 14.5H1.53551L4.5483 5.77273H6.92614L9.93466 14.5H7.95739L5.77131 7.76705H5.70312L3.51278 14.5ZM3.3892 11.0696H8.05966V12.5099H3.3892V11.0696ZM12.8175 14.6236C12.3999 14.6236 12.0277 14.5511 11.701 14.4062C11.3743 14.2585 11.1158 14.0412 10.9254 13.7543C10.7379 13.4645 10.6442 13.1037 10.6442 12.6719C10.6442 12.3082 10.7109 12.0028 10.8445 11.7557C10.978 11.5085 11.1598 11.3097 11.3899 11.1591C11.62 11.0085 11.8814 10.8949 12.174 10.8182C12.4695 10.7415 12.7791 10.6875 13.103 10.6562C13.4837 10.6165 13.7905 10.5795 14.0234 10.5455C14.2564 10.5085 14.4254 10.4545 14.5305 10.3835C14.6357 10.3125 14.6882 10.2074 14.6882 10.0682V10.0426C14.6882 9.77273 14.603 9.56392 14.4325 9.41619C14.2649 9.26847 14.0263 9.1946 13.7166 9.1946C13.3899 9.1946 13.13 9.26705 12.9368 9.41193C12.7436 9.55398 12.6158 9.73295 12.5533 9.94886L10.8743 9.8125C10.9595 9.41477 11.1271 9.07102 11.3771 8.78125C11.6271 8.48864 11.9496 8.2642 12.3445 8.10795C12.7422 7.94886 13.2024 7.86932 13.7251 7.86932C14.0888 7.86932 14.4368 7.91193 14.7692 7.99716C15.1044 8.08239 15.4013 8.21449 15.6598 8.39347C15.9212 8.57244 16.1271 8.80256 16.2777 9.08381C16.4283 9.36222 16.5036 9.69602 16.5036 10.0852V14.5H14.782V13.5923H14.7308C14.6257 13.7969 14.4851 13.9773 14.3089 14.1335C14.1328 14.2869 13.9212 14.4077 13.674 14.4957C13.4268 14.581 13.1413 14.6236 12.8175 14.6236ZM13.3374 13.3707C13.6044 13.3707 13.8402 13.3182 14.0447 13.2131C14.2493 13.1051 14.4098 12.9602 14.5263 12.7784C14.6428 12.5966 14.701 12.3906 14.701 12.1605V11.4659C14.6442 11.5028 14.5661 11.5369 14.4666 11.5682C14.37 11.5966 14.2607 11.6236 14.1385 11.6491C14.0163 11.6719 13.8942 11.6932 13.772 11.7131C13.6499 11.7301 13.5391 11.7457 13.4396 11.7599C13.2266 11.7912 13.0405 11.8409 12.8814 11.9091C12.7223 11.9773 12.5987 12.0696 12.5107 12.1861C12.4226 12.2997 12.3786 12.4418 12.3786 12.6122C12.3786 12.8594 12.468 13.0483 12.647 13.179C12.8288 13.3068 13.0589 13.3707 13.3374 13.3707Z"
+    //         fill="currentColor"
+    //       />
+    //     </svg>
+    //   ),
+    // },
     {
       id: "brush",
       title: "Brush",
@@ -73,22 +71,22 @@ const IndexPage = () => {
       id: "rectangle",
       icon: () => (
         <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect
-          x="3.41602"
-          y="3.41669"
-          width="13.5"
-          height="13.5"
-          rx="1.25"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </svg>
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            x="3.41602"
+            y="3.41669"
+            width="13.5"
+            height="13.5"
+            rx="1.25"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
       ),
     },
     {
@@ -96,20 +94,20 @@ const IndexPage = () => {
       id: "circle",
       icon: () => (
         <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="10"
-          cy="10"
-          r="6.75"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </svg>
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="10"
+            cy="10"
+            r="6.75"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
       ),
     },
     {
@@ -117,51 +115,51 @@ const IndexPage = () => {
       id: "eraser",
       icon: () => (
         <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M5.59886 10.4185L3.90318 13.3555C3.62703 13.8338 3.79091 14.4454 4.2692 14.7216L9.29811 17.625C9.7764 17.9011 10.388 17.7373 10.6641 17.259L12.3598 14.322M5.59886 10.4185L9.49023 3.67846C9.76638 3.20017 10.378 3.0363 10.8563 3.31244L15.8852 6.21588C16.3635 6.49202 16.5273 7.10361 16.2512 7.58191L12.3598 14.322M5.59886 10.4185L12.3598 14.322"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </svg>
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5.59886 10.4185L3.90318 13.3555C3.62703 13.8338 3.79091 14.4454 4.2692 14.7216L9.29811 17.625C9.7764 17.9011 10.388 17.7373 10.6641 17.259L12.3598 14.322M5.59886 10.4185L9.49023 3.67846C9.76638 3.20017 10.378 3.0363 10.8563 3.31244L15.8852 6.21588C16.3635 6.49202 16.5273 7.10361 16.2512 7.58191L12.3598 14.322M5.59886 10.4185L12.3598 14.322"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
       ),
-     },
+    },
     {
       title: "Cursor Highlight",
       id: "cursor-highlight",
       icon: () => (
-      <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M14.166 14.1667L17.4993 17.5"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M8.33203 8.33337L12.4982 18.3334L13.9773 13.9786L18.332 12.4995L8.33203 8.33337Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M9.18424 8.27298L7.95529 7.96154L8.2741 9.1886L9.55595 14.1222C8.48819 14.3478 7.3739 14.2746 6.33794 13.9036C5.08239 13.454 4.01557 12.5934 3.3105 11.4614C2.60544 10.3294 2.3035 8.99236 2.45364 7.66722C2.60379 6.34207 3.19723 5.10651 4.1377 4.16095C5.07817 3.21539 6.31051 2.6153 7.63482 2.458C8.95914 2.3007 10.2978 2.59542 11.4336 3.29437C12.5694 3.99331 13.4357 5.05548 13.8921 6.30858C14.2687 7.34266 14.3479 8.4567 14.1279 9.5258L9.18424 8.27298Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M14.166 14.1667L17.4993 17.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.33203 8.33337L12.4982 18.3334L13.9773 13.9786L18.332 12.4995L8.33203 8.33337Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9.18424 8.27298L7.95529 7.96154L8.2741 9.1886L9.55595 14.1222C8.48819 14.3478 7.3739 14.2746 6.33794 13.9036C5.08239 13.454 4.01557 12.5934 3.3105 11.4614C2.60544 10.3294 2.3035 8.99236 2.45364 7.66722C2.60379 6.34207 3.19723 5.10651 4.1377 4.16095C5.07817 3.21539 6.31051 2.6153 7.63482 2.458C8.95914 2.3007 10.2978 2.59542 11.4336 3.29437C12.5694 3.99331 13.4357 5.05548 13.8921 6.30858C14.2687 7.34266 14.3479 8.4567 14.1279 9.5258L9.18424 8.27298Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
       ),
     },
     {
@@ -169,85 +167,77 @@ const IndexPage = () => {
       id: "cursor-focus",
       icon: () => (
         <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g clipPath="url(#clip0_5778_278)">
-          <circle
-            cx="10"
-            cy="10"
-            r="9.25"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M11 11L14 14"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M6 6L9.33294 14L10.5162 10.5162L14 9.33294L6 6Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </g>
-        <defs>
-          <clipPath id="clip0_5778_278">
-            <rect width="20" height="20" fill="currentColor" />
-          </clipPath>
-        </defs>
-      </svg>
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g clipPath="url(#clip0_5778_278)">
+            <circle
+              cx="10"
+              cy="10"
+              r="9.25"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M11 11L14 14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M6 6L9.33294 14L10.5162 10.5162L14 9.33294L6 6Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+          <defs>
+            <clipPath id="clip0_5778_278">
+              <rect width="20" height="20" fill="currentColor" />
+            </clipPath>
+          </defs>
+        </svg>
       ),
     },
     // {
     //   title: "Line",
     //   id: "line",
     //   icon: () => (
-     
+
     //   ),
     // },
   ];
-  useEffect(() => {
-    const handleMessage = (_event, args) => alert(args);
-
-    // add a listener to 'message' channel
-    global.ipcRenderer.addListener("message", handleMessage);
-
-    return () => {
-      global.ipcRenderer.removeListener("message", handleMessage);
-    };
-  }, []);
-
-  const onSayHiClick = (tool) => {
-    global.ipcRenderer.send("message", tool);
-  };
 
   const RenderColors = () => {
     return (
       <div className="colors">
         <input
-          onChange={(e)=>{console.log(e)}}
+          onChange={(e) => {
+            console.log(e);
+          }}
           type="color"
           value="#D479FF"
           className="color"
           id="primary-color"
         />
         <input
-          onChange={(e)=>{console.log(e)}}
+          onChange={(e) => {
+            console.log(e);
+          }}
           type="color"
           value="#FFAE64"
           className="color"
           id="secondary-color"
         />
         <input
-          onChange={(e)=>{console.log(e)}}
+          onChange={(e) => {
+            console.log(e);
+          }}
           type="color"
           value="#62FFA1"
           className="color"
@@ -263,12 +253,12 @@ const IndexPage = () => {
         {tools.map((tool) => (
           <button
             key={`tool-${tool.id}`}
-            className={`toolbar-icon ${appState.selectedTool === tool.id && 'active'}`}
+            className={`toolbar-icon ${selectedTool === tool.id && "active"}`}
             id={tool.id}
             title={tool.title}
             onClick={() => {
               // onSayHiClick(tool.title);
-              updateAppState({selectedTool:tool.id})
+              updateAppState({ selectedTool: tool.id });
             }}
           >
             {tool.icon()}
@@ -351,9 +341,12 @@ const IndexPage = () => {
             />
           </svg>
         </div>
-        <div className="toolbar-icon" onClick={()=>{
-          updateAppState({selectedTool:'clear'})
-        }}>
+        <div
+          className="toolbar-icon"
+          onClick={() => {
+            updateAppState({ selectedTool: "clear" });
+          }}
+        >
           <svg
             width="20"
             height="20"

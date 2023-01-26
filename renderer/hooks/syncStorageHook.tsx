@@ -1,7 +1,29 @@
 import { useEffect, useState } from "react";
 
+export interface IAppState {
+  selectedTool: string;
+  stroke: number;
+  undoEnabled: boolean;
+  redoEnabled: boolean;
+  activeColor: string;
+  primaryColor: string;
+  secondaryColor: string;
+  ternaryColor: string;
+}
+
+const defaultState = {
+  selectedTool: "brush",
+  stroke: 3,
+  undoEnabled: false,
+  redoEnabled: false,
+  activeColor: "#62ffa1",
+  primaryColor: "#d479ff",
+  secondaryColor: "#ffae64",
+  ternaryColor: "#62ffa1",
+};
+
 export const useSyncStorage = () => {
-  const [appState, setAppState] = useState({ selectedTool: "brush" });
+  const [appState, setAppState] = useState<IAppState>(defaultState);
 
   const onStorageUpdate = (e) => {
     const { key, newValue } = e;
@@ -10,23 +32,21 @@ export const useSyncStorage = () => {
     }
   };
 
-  const setSyncState = (newState)=>{
-    window.localStorage.setItem("appState",JSON.stringify(newState))
+  const setSyncState = (newState) => {
+    window.localStorage.setItem("appState", JSON.stringify(newState));
     setAppState(newState);
-  }
+  };
 
   useEffect(() => {
-    setAppState(
-      JSON.parse(localStorage.getItem("appState")) || { selectedTool: "brush" }
-    );
+    setAppState(JSON.parse(localStorage.getItem("appState")) || defaultState);
     window.addEventListener("storage", onStorageUpdate);
     return () => {
       window.removeEventListener("storage", onStorageUpdate);
     };
   }, []);
 
-  return{
+  return {
     appState,
-    setAppState:setSyncState
-  }
+    setAppState: setSyncState,
+  };
 };
