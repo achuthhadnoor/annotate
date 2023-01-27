@@ -4,15 +4,25 @@
 //
 // import User from 'path/to/interfaces';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IpcRenderer } from 'electron'
+import { IpcRenderer } from "electron";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
-      ipcRenderer: IpcRenderer
+      ipcRenderer: IpcRenderer;
     }
   }
 }
 
-export type ICanvasTools = 'text' | 'brush' | 'line' | 'rectangle' | 'circle' | 'eraser' | 'arrow' | 'cursor-focus' | 'cursor-highlight' ;
+export type ICanvasTools =
+  | "selection"
+  | "text"
+  | "brush"
+  | "line"
+  | "rectangle"
+  | "circle"
+  | "eraser"
+  | "arrow"
+  | "cursor-focus"
+  | "cursor-highlight";

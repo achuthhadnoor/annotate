@@ -1,13 +1,8 @@
 import getStroke from "perfect-freehand";
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import Rough from "roughjs/bundled/rough.cjs";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import rough from "roughjs/bundled/rough.cjs";
 import { useAppState, useUpdateAppState } from "../context/appContext";
+import { useHistory } from "../hooks/useHistory";
 import { ICanvasTools } from "../interfaces";
 
 export default function Canvas() {
@@ -15,120 +10,141 @@ export default function Canvas() {
   const appState = useAppState();
   // ? app state update context
   const updateAppState = useUpdateAppState();
-  // ? active tool on the canvas
-  const [toolType, setToolType] = useState<ICanvasTools>("brush");
 
-  const [stroke, setStroke] = useState<number>(3);
-  // ? collection of items on the canvas
-  const [elements, setElements] = useState([]);
-  // ? this stack hold the redo items after undo and if another action is performed on canvas this will be empty
-  const [redoStak, setRedoStack] = useState([]);
-  // ? drawing mode on canvas
-  const [drawing, setDrawing] = useState(false);
-
-  // canvas refs
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [action, setAction] = useState("none");
+  const [elements, setElements, undo, redo] = useHistory([]);
+  const [tool, setTool] = useState<ICanvasTools>("brush");
+  const [selectedElement, setSelectedElement] = useState(null);
+  const textAreaRef = useRef(null);
+  const canvasRef = useRef(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const generator = rough.generator();
 
-  const generator = Rough.generator();
-
-  const createElement = (
-    id,
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    type
-  ) => {
-    let roughElement = generator.line(x1, y1, x2, y2, {
-      // stroke: "cyan",
-    });
+  const createElement = (id, x1, y1, x2, y2, type) => {
     switch (type) {
-      case "rectangle":
       case "line":
-        roughElement =
-          type === "rectangle"
-            ? generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
-                stroke: "cyan",
-              })
-            : generator.line(x1, y1, x2, y2, {
-                stroke: "cyan",
-              });
-        return { x1, y1, x2, y2, type, roughElement };
-      case "circle":
-        console.log("width:", x2 - x1 + "height", y2 - y1);
-        roughElement = generator.ellipse(x1, y1, x2 - x1, y2 - y1, {
-          stroke: "cyan",
-        });
-        return { x1, y1, x2, y2, type, roughElement };
+      case "rectangle":
+        const roughElement =
+          type === "line"
+            ? generator.line(x1, y1, x2, y2)
+            : generator.rectangle(x1, y1, x2 - x1, y2 - y1);
+        return { id, x1, y1, x2, y2, type, roughElement };
       case "brush":
         return { id, type, points: [{ x: x1, y: y1 }] };
       case "text":
-        return { id, x1, y1, type, text: "Hello world" };
+        return { id, type, x1, y1, x2, y2, text: "" };
       default:
-        throw new Error("unknow tool");
-        break;
+        throw new Error(`Type not recognised: ${type}`);
     }
   };
 
-  const handleMouseDown = (e: { clientX: any; clientY: any }) => {
-    setDrawing(true);
-    const { clientX, clientY } = e;
-    const index = elements.length;
-    const element = createElement(
-      index,
-      clientX,
-      clientY,
-      clientX,
-      clientY,
-      toolType
-    );
-    setElements((prvState) => [...prvState, element]);
+  const nearPoint = (x, y, x1, y1, name) => {
+    return Math.abs(x - x1) < 5 && Math.abs(y - y1) < 5 ? name : null;
   };
 
-  const handleMouseMove = (e: { clientX: any; clientY: any }) => {
-    if (!drawing) return;
-    const index = elements.length - 1;
-    const { x1, y1 } = elements[index];
-    const { clientX, clientY } = e;
+  const onLine = (x1, y1, x2, y2, x, y, maxDistance = 1) => {
+    const a = { x: x1, y: y1 };
+    const b = { x: x2, y: y2 };
+    const c = { x, y };
+    const offset = distance(a, b) - (distance(a, c) + distance(b, c));
+    return Math.abs(offset) < maxDistance ? "inside" : null;
+  };
 
-    const elementsCopy = [...elements];
-    switch (toolType) {
+  const positionWithinElement = (x, y, element) => {
+    const { type, x1, x2, y1, y2 } = element;
+    switch (type) {
       case "line":
+        const on = onLine(x1, y1, x2, y2, x, y);
+        const start = nearPoint(x, y, x1, y1, "start");
+        const end = nearPoint(x, y, x2, y2, "end");
+        return start || end || on;
       case "rectangle":
-      case "circle":
-        elementsCopy[index] = createElement(
-          index,
-          x1,
-          y1,
-          clientX,
-          clientY,
-          toolType
-        );
-        break;
+        const topLeft = nearPoint(x, y, x1, y1, "tl");
+        const topRight = nearPoint(x, y, x2, y1, "tr");
+        const bottomLeft = nearPoint(x, y, x1, y2, "bl");
+        const bottomRight = nearPoint(x, y, x2, y2, "br");
+        const inside =
+          x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
+        return topLeft || topRight || bottomLeft || bottomRight || inside;
       case "brush":
-        elementsCopy[index].points = [
-          ...elements[index].points,
-          { x: clientX, y: clientY },
-        ];
-        break;
-
+        const betweenAnyPoint = element.points.some((point, index) => {
+          const nextPoint = element.points[index + 1];
+          if (!nextPoint) return false;
+          return (
+            onLine(point.x, point.y, nextPoint.x, nextPoint.y, x, y, 5) != null
+          );
+        });
+        return betweenAnyPoint ? "inside" : null;
+      case "text":
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
       default:
-        break;
+        throw new Error(`Type not recognised: ${type}`);
     }
-    setElements(elementsCopy);
   };
 
-  const handleMouseLeave = () => {
-    setDrawing(false);
+  const distance = (a, b) =>
+    Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+  const getElementAtPosition = (x, y, elements) => {
+    return elements
+      .map((element) => ({
+        ...element,
+        position: positionWithinElement(x, y, element),
+      }))
+      .find((element) => element.position !== null);
   };
 
-  const clearCanvas = () => {
-    ctxRef.current?.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    setElements([]);
+  const adjustElementCoordinates = (element) => {
+    const { type, x1, y1, x2, y2 } = element;
+    if (type === "rectangle") {
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+      return { x1: minX, y1: minY, x2: maxX, y2: maxY };
+    } else {
+      if (x1 < x2 || (x1 === x2 && y1 < y2)) {
+        return { x1, y1, x2, y2 };
+      } else {
+        return { x1: x2, y1: y2, x2: x1, y2: y1 };
+      }
+    }
   };
 
-  function getSvgPathFromStroke(stroke) {
+  const cursorForPosition = (position) => {
+    switch (position) {
+      case "tl":
+      case "br":
+      case "start":
+      case "end":
+        return "nwse-resize";
+      case "tr":
+      case "bl":
+        return "nesw-resize";
+      default:
+        return "move";
+    }
+  };
+
+  const resizedCoordinates = (clientX, clientY, position, coordinates) => {
+    const { x1, y1, x2, y2 } = coordinates;
+    switch (position) {
+      case "tl":
+      case "start":
+        return { x1: clientX, y1: clientY, x2, y2 };
+      case "tr":
+        return { x1, y1: clientY, x2: clientX, y2 };
+      case "bl":
+        return { x1: clientX, y1, x2, y2: clientY };
+      case "br":
+      case "end":
+        return { x1, y1, x2: clientX, y2: clientY };
+      default:
+        return null; //should not really get here...
+    }
+  };
+
+  const getSvgPathFromStroke = (stroke) => {
     if (!stroke.length) return "";
 
     const d = stroke.reduce(
@@ -139,61 +155,305 @@ export default function Canvas() {
       },
       ["M", ...stroke[0], "Q"]
     );
+
     d.push("Z");
     return d.join(" ");
-  }
+  };
 
-  const drawElement = (
-    roughCanvas,
-    { type, x1, y1, roughElement, points, text }
-  ) => {
+  const drawElement = (roughCanvas, context, element) => {
+    switch (element.type) {
+      case "line":
+      case "rectangle":
+        roughCanvas.draw(element.roughElement);
+        break;
+      case "brush":
+        const stroke = getSvgPathFromStroke(getStroke(element.points));
+        context.fill(new Path2D(stroke));
+        break;
+      case "text":
+        context.textBaseline = "top";
+        context.font = "24px sans-serif";
+        context.fillText(element.text, element.x1, element.y1);
+        break;
+      default:
+        throw new Error(`Type not recognised: ${element.type}`);
+    }
+  };
+  const adjustmentRequired = (type) => ["line", "rectangle"].includes(type);
+
+  const clear = () => {
+    ctxRef.current?.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+  };
+  useEffect(() => {
+    if (window) {
+      const canvas: HTMLCanvasElement = canvasRef.current;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const context: any = canvas.getContext("2d");
+      ctxRef.current = context;
+
+      const roughCanvas = rough.canvas(canvas);
+
+      elements.forEach((element) => {
+        if (action === "writing" && selectedElement.id === element.id) return;
+        drawElement(roughCanvas, context, element);
+      });
+    }
+  }, [elements, action, selectedElement]);
+
+  useEffect(() => {
+    const undoRedoFunction = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "z") {
+        if (event.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", undoRedoFunction);
+    return () => {
+      document.removeEventListener("keydown", undoRedoFunction);
+    };
+  }, [undo, redo]);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const textArea: any = textAreaRef.current;
+      if (action === "writing") {
+        textArea?.focus();
+        textArea.value = selectedElement.text;
+      }
+    }
+  }, [action, selectedElement]);
+
+  const updateElement = (id, x1, y1, x2, y2, type, options = { text: "" }) => {
+    const elementsCopy = [...elements];
+
     switch (type) {
       case "line":
       case "rectangle":
-        roughCanvas.draw(roughElement);
+        elementsCopy[id] = createElement(id, x1, y1, x2, y2, type);
         break;
       case "brush":
-        const stroke = getSvgPathFromStroke(getStroke(points, { size: 3 }));
-        ctxRef.current.strokeStyle = "#FF0000";
-        ctxRef.current.fill(new Path2D(stroke));
+        elementsCopy[id].points = [
+          ...elementsCopy[id].points,
+          { x: x2, y: y2 },
+        ];
         break;
       case "text":
-        ctxRef.current.font = "16px sans-serif";
-        ctxRef.current.fillText(text, x1, y1);
+        if (textAreaRef.current) {
+          let ref: any = textAreaRef.current;
+          const textWidth = ref
+            .getContext("2d")
+            .measureText(options.text).width;
+          const textHeight = 24;
+          elementsCopy[id] = {
+            ...createElement(id, x1, y1, x1 + textWidth, y1 + textHeight, type),
+            text: options.text,
+          };
+        }
         break;
       default:
-        break;
+        throw new Error(`Type not recognised: ${type}`);
+    }
+
+    setElements(elementsCopy, true);
+  };
+
+  const handleMouseDown = (event) => {
+    if (action === "writing") return;
+
+    const { clientX, clientY } = event;
+    if (tool === "selection") {
+      const element = getElementAtPosition(clientX, clientY, elements);
+      if (element) {
+        if (element.type === "brush") {
+          const xOffsets = element.points.map((point) => clientX - point.x);
+          const yOffsets = element.points.map((point) => clientY - point.y);
+          setSelectedElement({ ...element, xOffsets, yOffsets });
+        } else {
+          const offsetX = clientX - element.x1;
+          const offsetY = clientY - element.y1;
+          setSelectedElement({ ...element, offsetX, offsetY });
+        }
+        setElements((prevState) => prevState);
+
+        if (element.position === "inside") {
+          setAction("moving");
+        } else {
+          setAction("resizing");
+        }
+      }
+    } else {
+      const id = elements.length;
+      const element = createElement(
+        id,
+        clientX,
+        clientY,
+        clientX,
+        clientY,
+        tool
+      );
+      setElements((prevState) => [...prevState, element]);
+      setSelectedElement(element);
+
+      setAction(tool === "text" ? "writing" : "drawing");
     }
   };
 
-  useEffect(() => {
-    if (window) {
-      canvasRef.current.width = window.innerWidth;
-      canvasRef.current.height = window.innerHeight;
-      const canvas = canvasRef.current;
-      ctxRef.current = canvas.getContext("2d");
-      ctxRef.current.fillStyle = "cyan";
-      const roughCanvas = Rough.canvas(canvas);
-      elements.map((element) => drawElement(roughCanvas, element));
+  const handleMouseMove = (event) => {
+    const { clientX, clientY } = event;
+
+    if (tool === "selection") {
+      const element = getElementAtPosition(clientX, clientY, elements);
+      event.target.style.cursor = element
+        ? cursorForPosition(element.position)
+        : "default";
     }
-  }, [elements]);
+
+    if (action === "drawing") {
+      const index = elements.length - 1;
+      const { x1, y1 } = elements[index];
+      updateElement(index, x1, y1, clientX, clientY, tool);
+    } else if (action === "moving") {
+      if (selectedElement.type === "brush") {
+        const newPoints = selectedElement.points.map((_, index) => ({
+          x: clientX - selectedElement.xOffsets[index],
+          y: clientY - selectedElement.yOffsets[index],
+        }));
+        const elementsCopy = [...elements];
+        elementsCopy[selectedElement.id] = {
+          ...elementsCopy[selectedElement.id],
+          points: newPoints,
+        };
+        setElements(elementsCopy, true);
+      } else {
+        const { id, x1, x2, y1, y2, type, offsetX, offsetY } = selectedElement;
+        const width = x2 - x1;
+        const height = y2 - y1;
+        const newX1 = clientX - offsetX;
+        const newY1 = clientY - offsetY;
+        const options =
+          type === "text" ? { text: selectedElement.text } : { text: "" };
+        updateElement(
+          id,
+          newX1,
+          newY1,
+          newX1 + width,
+          newY1 + height,
+          type,
+          options
+        );
+      }
+    } else if (action === "resizing") {
+      const { id, type, position, ...coordinates } = selectedElement;
+      const { x1, y1, x2, y2 } = resizedCoordinates(
+        clientX,
+        clientY,
+        position,
+        coordinates
+      );
+      updateElement(id, x1, y1, x2, y2, type);
+    }
+  };
+
+  const handleMouseUp = (event) => {
+    const { clientX, clientY } = event;
+    if (selectedElement) {
+      if (
+        selectedElement.type === "text" &&
+        clientX - selectedElement.offsetX === selectedElement.x1 &&
+        clientY - selectedElement.offsetY === selectedElement.y1
+      ) {
+        setAction("writing");
+        return;
+      }
+
+      const index = selectedElement.id;
+      const { id, type } = elements[index];
+      if (
+        (action === "drawing" || action === "resizing") &&
+        adjustmentRequired(type)
+      ) {
+        const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
+        updateElement(id, x1, y1, x2, y2, type);
+      }
+    }
+
+    if (action === "writing") return;
+
+    setAction("none");
+    setSelectedElement(null);
+  };
+
+  const handleBlur = (event) => {
+    const { id, x1, y1, type } = selectedElement;
+    setAction("none");
+    setSelectedElement(null);
+    updateElement(id, x1, y1, null, null, type, { text: event.target.value });
+  };
 
   useEffect(() => {
-    if (appState.selectedTool === "clear") {
-      clearCanvas();
-      updateAppState({ selectedTool: toolType });
-      return;
+    switch (appState.selectedTool) {
+      case "clear":
+        clear();
+        updateAppState({ selectedTool: tool });
+        return;
+      case "undo":
+        undo();
+        updateAppState({ selectedTool: tool });
+        return;
+      case "redo":
+        redo();
+        updateAppState({ selectedTool: tool });
+        return;
+      case "stroke":
+        // updateStroke();
+        updateAppState({ selectedTool: tool });
+        return;
+      default:
+        break;
     }
-    setToolType(appState.selectedTool);
+    setTool(appState.selectedTool);
   }, [appState]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseLeave}
-      onMouseLeave={handleMouseLeave}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        id="canvas"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      />
+      {action === "writing" ? (
+        <textarea
+          ref={textAreaRef}
+          onBlur={handleBlur}
+          style={{
+            position: "fixed",
+            top: selectedElement.y1 - 2,
+            left: selectedElement.x1,
+            font: "24px sans-serif",
+            margin: 0,
+            padding: 0,
+            border: 0,
+            outline: 0,
+            // resize: "auto",
+            overflow: "hidden",
+            whiteSpace: "pre",
+            background: "transparent",
+          }}
+        />
+      ) : null}
+    </>
   );
 }
