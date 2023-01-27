@@ -12,7 +12,7 @@ export default function Canvas() {
   const updateAppState = useUpdateAppState();
 
   const [action, setAction] = useState("none");
-  const [elements, setElements, undo, redo] = useHistory([]);
+  const [elements, setElements, undo, redo, clear] = useHistory([]);
   const [tool, setTool] = useState<ICanvasTools>("brush");
   const [selectedElement, setSelectedElement] = useState(null);
   const textAreaRef = useRef(null);
@@ -181,14 +181,6 @@ export default function Canvas() {
   };
   const adjustmentRequired = (type) => ["line", "rectangle"].includes(type);
 
-  const clear = () => {
-    ctxRef.current?.clearRect(
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height
-    );
-  };
   useEffect(() => {
     if (window) {
       const canvas: HTMLCanvasElement = canvasRef.current;
@@ -419,6 +411,9 @@ export default function Canvas() {
         // updateStroke();
         updateAppState({ selectedTool: tool });
         return;
+      case "text":
+        setAction("writing");
+        break;
       default:
         break;
     }

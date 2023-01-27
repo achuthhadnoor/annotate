@@ -22,5 +22,6 @@ export const useHistory = (initialState) => {
   const redo = () =>
     index < history.length - 1 && setIndex((prevState) => prevState + 1);
 
-  return [history[index], setState, undo, redo];
+  const clear = () => index > 0 && setIndex(0);
+  return [history[index], setState, undo, redo, clear];
 };
