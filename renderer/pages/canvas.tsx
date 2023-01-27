@@ -55,6 +55,12 @@ export default function Canvas() {
                 stroke: "cyan",
               });
         return { x1, y1, x2, y2, type, roughElement };
+      case "circle":
+        console.log("width:", x2 - x1 + "height", y2 - y1);
+        roughElement = generator.ellipse(x1, y1, x2 - x1, y2 - y1, {
+          stroke: "cyan",
+        });
+        return { x1, y1, x2, y2, type, roughElement };
       case "brush":
         return { id, type, points: [{ x: x1, y: y1 }] };
       case "text":
@@ -90,6 +96,7 @@ export default function Canvas() {
     switch (toolType) {
       case "line":
       case "rectangle":
+      case "circle":
         elementsCopy[index] = createElement(
           index,
           x1,

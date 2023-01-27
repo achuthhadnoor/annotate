@@ -1,15 +1,14 @@
-import { app, dialog, ipcMain, IpcMainEvent } from "electron";
+import { app, ipcMain, IpcMainEvent } from "electron";
 import prepareNext from "electron-next";
 import { initializeTray } from "./tray";
 import { windowManager } from "./windows/windowManager";
 import "./windows/load";
 
-if (app.dock) app.dock.hide();
+// if (app.dock) app.dock.hide();
 
 app.whenReady().then(async () => {
   await prepareNext("./renderer");
   initializeTray();
-  dialog.showErrorBox("error", "");
   windowManager.main?.open();
   windowManager.canvas?.open();
 });

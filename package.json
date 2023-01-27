@@ -6,6 +6,7 @@
   "productName": "Annotate",
   "description": "A small utility app to boost your video calls",
   "scripts": {
+    "start": "next build renderer && next start renderer",
     "clean": "rimraf dist main renderer/out renderer/.next",
     "dev": "npm run build-electron && electron .",
     "build-renderer": "next build renderer && next export renderer",
@@ -37,8 +38,8 @@
     "typescript": "^4.0.5"
   },
   "build": {
-    "asar": true,
     "files": [
+      "assets",
       "main",
       "renderer/out"
     ]

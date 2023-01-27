@@ -24,19 +24,19 @@ const open = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: false,
-      preload: join(__dirname, "../preload.js"),
+      preload: join(__dirname, "../preload"),
     },
   });
   const url = is.development
     ? "http://localhost:8000/"
     : format({
-        pathname: join(__dirname, "../renderer/out/index.html"),
+        pathname: join(__dirname, "../../renderer/out/index.html"),
         protocol: "file:",
         slashes: true,
       });
 
   window.loadURL(url);
-  window.webContents.openDevTools({ mode: "detach" });
+  is.development && window.webContents.openDevTools({ mode: "detach" });
   window.setContentProtection(true);
   window.setAlwaysOnTop(true, "screen-saver", 1);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });

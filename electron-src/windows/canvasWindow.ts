@@ -25,19 +25,19 @@ const open = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: false,
-      preload: join(__dirname, "preload.js"),
+      preload: join(__dirname, "../preload"),
     },
   });
   const url = is.development
     ? "http://localhost:8000/canvas"
     : format({
-        pathname: join(__dirname, "../renderer/out/canvas.html"),
+        pathname: join(__dirname, "../../renderer/out/canvas.html"),
         protocol: "file:",
         slashes: true,
       });
 
   window.loadURL(url);
-  window.webContents.openDevTools({ mode: "detach" });
+  is.development && window.webContents.openDevTools({ mode: "detach" });
   // window.setContentProtection(true);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   window.setIgnoreMouseEvents(canvasPassThrough, {

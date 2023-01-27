@@ -38,8 +38,8 @@ const getContextMenu = () => {
 };
 
 export const initializeTray = () => {
-  tray = new Tray(join(__dirname, "../build/annotateTemplate.png"));
-  //   tray.setTitle("◉"); // ◎
+  tray = new Tray(join(__dirname, "../assets/annotateTemplate.png"));
+  // tray.setTitle("◉"); // ◎
   tray.setToolTip("lapse");
   tray.setContextMenu(getContextMenu());
 };
