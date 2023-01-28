@@ -335,9 +335,10 @@ const IndexPage = () => {
       <div className="separator"></div>
       <input
         type={"range"}
-        max="10"
+        max="50"
         className="slider h-5"
         value={appState.stroke}
+        min="3"
         onChange={(e) => {
           updateAppState({
             ...appState,

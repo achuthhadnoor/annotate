@@ -94,8 +94,10 @@ button {
   border-bottom-right-radius: 20%; */
   /* border-top-left-radius: 50%;
   border-bottom-left-radius: 50%; */
+  user-select: auto;
 }
 .slider::-webkit-slider-thumb {
+  -webkit-app-region: no-drag;
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
@@ -103,6 +105,7 @@ button {
   background: rgb(225, 182, 255);
   cursor: pointer;
   border-radius: 50px;
+  user-select: auto;
 }
 canvas {
   background: #00000022;

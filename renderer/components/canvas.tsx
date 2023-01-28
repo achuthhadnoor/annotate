@@ -9,13 +9,7 @@ import React, {
 import rough from "roughjs/bundled/rough.cjs";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 import { useHistory } from "../hooks/useHistory";
-import { ICanvasTools, IElement } from "../interfaces";
-import {
-  adjustElementCoordinates,
-  cursorForPosition,
-  getElementAtPosition,
-  resizedCoordinates,
-} from "../utils/math";
+import { ICanvasTools } from "../interfaces";
 
 export default function Canvas() {
   // ? app state that sysncs between windows using custome hook `useAppState()`
@@ -33,49 +27,158 @@ export default function Canvas() {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const generator = rough.generator();
 
-  const createElement = (newElement: IElement) => {
-    let roughElement;
-    const { id, type, text, x1, x2, y1, y2, options } = newElement;
-    switch (newElement.type) {
+  const createElement = (id, x1, y1, x2, y2, type, options) => {
+    switch (type) {
       case "line":
-        roughElement = generator.line(x1, y1, x2, y2, {
-          stroke: options.stroke,
-          strokeWidth: options.strokeWidth,
-        });
-        break;
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.line(x1, y1, x2, y2, options),
+        };
       case "rectangle":
-        roughElement = generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
-          roughness: 2.8,
-          stroke: options.stroke,
-          strokeWidth: options.strokeWidth,
-          fill: options.fill ? options.activeColor : "",
-        });
-        break;
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.rectangle(x1, y1, x2 - x1, y2 - y1, options),
+        };
       case "circle":
-        if (!options.fill) {
-          roughElement = generator.circle(x1, y1, x2 - x1, {
-            stroke: options.stroke,
-            strokeWidth: options.strokeWidth,
-          });
-        } else {
-          roughElement = generator.circle(x1, y1, x2 - x1, {
-            fill: options.stroke,
-            fillWeight: options.fillWeight, // thicker lines for hachure
-          });
-        }
-        break;
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.circle(x1, y1, x2 - x1, options),
+        };
       case "brush":
       case "eraser":
         return { id, type, points: [{ x: x1, y: y1 }], options };
       case "text":
-        return { id, type, x1, y1, x2, y2, text, options };
+        return { id, type, x1, y1, x2, y2, text: "", options };
       default:
         throw new Error(`Type not recognised: ${type}`);
     }
-    return {
-      ...newElement,
-      roughElement,
-    };
+  };
+
+  const nearPoint = (x, y, x1, y1, name) => {
+    return Math.abs(x - x1) < 5 && Math.abs(y - y1) < 5 ? name : null;
+  };
+
+  const onLine = (x1, y1, x2, y2, x, y, maxDistance = 1) => {
+    const a = { x: x1, y: y1 };
+    const b = { x: x2, y: y2 };
+    const c = { x, y };
+    const offset = distance(a, b) - (distance(a, c) + distance(b, c));
+    return Math.abs(offset) < maxDistance ? "inside" : null;
+  };
+
+  const positionWithinElement = (x, y, element) => {
+    const { type, x1, x2, y1, y2 } = element;
+    switch (type) {
+      case "line":
+        const on = onLine(x1, y1, x2, y2, x, y);
+        const start = nearPoint(x, y, x1, y1, "start");
+        const end = nearPoint(x, y, x2, y2, "end");
+        return start || end || on;
+      case "circle":
+        // return x >= x1 && x <= x2 && y >= y1 && y <= y2
+        return x <= x2 && x >= -(x1 - x2) && y >= y2 && y <= -(y1 - y2)
+          ? "inside"
+          : null;
+      case "rectangle":
+        const topLeft = nearPoint(x, y, x1, y1, "tl");
+        const topRight = nearPoint(x, y, x2, y1, "tr");
+        const bottomLeft = nearPoint(x, y, x1, y2, "bl");
+        const bottomRight = nearPoint(x, y, x2, y2, "br");
+        const inside =
+          x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
+        return topLeft || topRight || bottomLeft || bottomRight || inside;
+      case "brush":
+      case "eraser":
+        const betweenAnyPoint = element.points.some((point, index) => {
+          const nextPoint = element.points[index + 1];
+          if (!nextPoint) return false;
+          return (
+            onLine(point.x, point.y, nextPoint.x, nextPoint.y, x, y, 5) != null
+          );
+        });
+        return betweenAnyPoint ? "inside" : null;
+      case "text":
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
+      default:
+        throw new Error(`Type not recognised: ${type}`);
+    }
+  };
+
+  const distance = (a, b) =>
+    Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+  const getElementAtPosition = (x, y, elements) => {
+    return elements
+      .map((element) => ({
+        ...element,
+        position: positionWithinElement(x, y, element),
+      }))
+      .find((element) => element.position !== null);
+  };
+
+  const adjustElementCoordinates = (element) => {
+    const { type, x1, y1, x2, y2 } = element;
+    if (type === "rectangle") {
+      const minX = Math.min(x1, x2);
+      const maxX = Math.max(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxY = Math.max(y1, y2);
+      return { x1: minX, y1: minY, x2: maxX, y2: maxY };
+    } else {
+      if (x1 < x2 || (x1 === x2 && y1 < y2)) {
+        return { x1, y1, x2, y2 };
+      } else {
+        return { x1: x2, y1: y2, x2: x1, y2: y1 };
+      }
+    }
+  };
+
+  const cursorForPosition = (position) => {
+    switch (position) {
+      case "tl":
+      case "br":
+      case "start":
+      case "end":
+        return "nwse-resize";
+      case "tr":
+      case "bl":
+        return "nesw-resize";
+      default:
+        return "move";
+    }
+  };
+
+  const resizedCoordinates = (clientX, clientY, position, coordinates) => {
+    const { x1, y1, x2, y2 } = coordinates;
+    switch (position) {
+      case "tl":
+      case "start":
+        return { x1: clientX, y1: clientY, x2, y2 };
+      case "tr":
+        return { x1, y1: clientY, x2: clientX, y2 };
+      case "bl":
+        return { x1: clientX, y1, x2, y2: clientY };
+      case "br":
+      case "end":
+        return { x1, y1, x2: clientX, y2: clientY };
+      default:
+        return null; //should not really get here...
+    }
   };
 
   const getSvgPathFromStroke = (stroke) => {
@@ -94,7 +197,7 @@ export default function Canvas() {
     return d.join(" ");
   };
 
-  const drawElementOnCanvas = (roughCanvas, context, element: IElement) => {
+  const drawElement = (roughCanvas, context, element) => {
     switch (element.type) {
       case "line":
       case "rectangle":
@@ -105,11 +208,11 @@ export default function Canvas() {
       case "eraser":
         const stroke = getSvgPathFromStroke(
           getStroke(element.points, {
-            size: element.options.strokeWidth,
+            size: appState.stroke,
           })
         );
         context.fillStyle =
-          element.type === "eraser" ? "#00000042" : element.options.stroke;
+          element.type === "eraser" ? "#00000042" : appState.activeColor;
         context.fill(new Path2D(stroke));
         break;
       case "text":
@@ -123,7 +226,7 @@ export default function Canvas() {
     updateAppState({
       ...appState,
       redoEnabled: redoEnabled(),
-      undoEnabled: undoEnabled(),
+      rundoEnabled: undoEnabled(),
       selectedTool: tool,
     });
   };
@@ -135,10 +238,12 @@ export default function Canvas() {
       case "line":
       case "rectangle":
       case "circle":
-        console.log("====================================");
-        console.log(options);
-        console.log("====================================");
-        elementsCopy[id] = createElement({ id, x1, y1, x2, y2, type, options });
+        // const options = {
+        //   stroke: appState.activeColor,
+        //   strokeWidth: appState.stroke,
+        //   fill: appState.fill ? appState.activeColor : "",
+        // };
+        elementsCopy[id] = createElement(id, x1, y1, x2, y2, type, options);
         break;
       case "brush":
       case "eraser":
@@ -155,15 +260,15 @@ export default function Canvas() {
             .measureText(options.text).width;
           const textHeight = 24;
           elementsCopy[id] = {
-            ...createElement({
+            ...createElement(
               id,
               x1,
               y1,
-              x2: x1 + textWidth,
-              y2: y1 + textHeight,
+              x1 + textWidth,
+              y1 + textHeight,
               type,
-              options,
-            }),
+              options
+            ),
             text: options.text,
           };
         }
@@ -199,20 +304,22 @@ export default function Canvas() {
         }
       }
     } else {
-      const element: IElement = createElement({
-        id: elements.length,
-        x1: clientX,
-        y1: clientY,
-        x2: clientX,
-        y2: clientY,
-        type: tool,
-        options: {
-          stroke: appState.activeColor,
-          strokeWidth: appState.stroke,
-          fill: appState.fill,
-          fillWeight: appState.stroke, // thicker lines for hachure
-        },
-      });
+      const id = elements.length;
+      const options = {
+        stroke: appState.activeColor,
+        strokeWidth: appState.stroke,
+        fill: appState.fill ? appState.activeColor : "",
+        fillWeight: appState.stroke, // thicker lines for hachure
+      };
+      const element = createElement(
+        id,
+        clientX,
+        clientY,
+        clientX,
+        clientY,
+        tool,
+        options
+      );
       setElements((prevState) => [...prevState, element]);
       setSelectedElement(element);
       setAction(tool === "text" ? "writing" : "drawing");
@@ -245,15 +352,13 @@ export default function Canvas() {
         };
         setElements(elementsCopy, true);
       } else {
-        console.log("====================================");
-        console.log(selectedElement);
-        console.log("====================================");
-        const { id, x1, x2, y1, y2, type, offsetX, offsetY, options } =
-          selectedElement;
+        const { id, x1, x2, y1, y2, type, offsetX, offsetY } = selectedElement;
         const width = x2 - x1;
         const height = y2 - y1;
         const newX1 = clientX - offsetX;
         const newY1 = clientY - offsetY;
+        const options =
+          type === "text" ? { text: selectedElement.text } : { text: "" };
         updateElement(
           id,
           newX1,
@@ -328,7 +433,7 @@ export default function Canvas() {
 
       elements.forEach((element) => {
         if (action === "writing" && selectedElement.id === element.id) return;
-        drawElementOnCanvas(roughCanvas, context, element);
+        drawElement(roughCanvas, context, element);
       });
     }
   }, [elements, action, selectedElement]);

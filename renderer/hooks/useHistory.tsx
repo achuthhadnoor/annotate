@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export const useHistory = (initialState) => {
   const [index, setIndex] = useState(0);
-  const [history, setHistory] = useState([initialState]);
+  const [history, setHistory] = useState<any>([initialState]);
 
   const setState = (action, overwrite = false) => {
     const newState =

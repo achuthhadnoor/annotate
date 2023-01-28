@@ -14,7 +14,7 @@ export interface IAppState {
 export const defaultState = {
   selectedTool: "brush",
   stroke: 3,
-  fill: true,
+  fill: false,
   undoEnabled: true,
   redoEnabled: false,
   activeColor: "#62ffa1",

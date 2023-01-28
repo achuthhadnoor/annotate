@@ -26,3 +26,16 @@ export type ICanvasTools =
   | "arrow"
   | "cursor-focus"
   | "cursor-highlight";
+
+export interface IElement {
+  id: number;
+  x1?: number;
+  y1?: number;
+  x2?: number;
+  y2?: number;
+  type?: string;
+  text?: string;
+  points?: any[];
+  options?: any;
+  roughElement?: any;
+}
