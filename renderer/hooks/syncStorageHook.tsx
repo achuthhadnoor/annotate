@@ -11,10 +11,11 @@ export interface IAppState {
   ternaryColor: string;
 }
 
-const defaultState = {
+export const defaultState = {
   selectedTool: "brush",
   stroke: 3,
-  undoEnabled: false,
+  fill: true,
+  undoEnabled: true,
   redoEnabled: false,
   activeColor: "#62ffa1",
   primaryColor: "#d479ff",
@@ -38,6 +39,7 @@ export const useSyncStorage = () => {
   };
 
   useEffect(() => {
+    localStorage.clear();
     setAppState(JSON.parse(localStorage.getItem("appState")) || defaultState);
     window.addEventListener("storage", onStorageUpdate);
     return () => {

@@ -19,7 +19,7 @@ const getContextMenu = () => {
       },
     },
     {
-      label: "Activate",
+      label: "Toggle pass Through",
       click: () => {
         windowManager.canvas?.clickThrough();
       },

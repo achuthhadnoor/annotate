@@ -17,6 +17,7 @@
     "type-check": "tsc -p ./renderer/tsconfig.json && tsc -p ./electron-src/tsconfig.json"
   },
   "dependencies": {
+    "classnames": "^2.3.2",
     "electron-next": "^3.1.5",
     "electron-util": "^0.17.2",
     "perfect-freehand": "^1.2.0",

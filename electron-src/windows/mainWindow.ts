@@ -37,7 +37,7 @@ const open = () => {
 
   window.loadURL(url);
   is.development && window.webContents.openDevTools({ mode: "detach" });
-  window.setContentProtection(true);
+  // window.setContentProtection(true);
   window.setAlwaysOnTop(true, "screen-saver", 1);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   window.webContents.on("did-finish-load", () => {

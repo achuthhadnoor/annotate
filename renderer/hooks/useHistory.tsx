@@ -21,7 +21,16 @@ export const useHistory = (initialState) => {
   const undo = () => index > 0 && setIndex((prevState) => prevState - 1);
   const redo = () =>
     index < history.length - 1 && setIndex((prevState) => prevState + 1);
-
+  const redoEnabled = () => index < history.length;
+  const undoEnabled = () => index >= 0;
   const clear = () => index > 0 && setIndex(0);
-  return [history[index], setState, undo, redo, clear];
+  return [
+    history[index],
+    setState,
+    undo,
+    redo,
+    clear,
+    redoEnabled,
+    undoEnabled,
+  ];
 };

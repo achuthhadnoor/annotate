@@ -12,7 +12,8 @@ export default function Canvas() {
   const updateAppState = useUpdateAppState();
 
   const [action, setAction] = useState("none");
-  const [elements, setElements, undo, redo, clear] = useHistory([]);
+  const [elements, setElements, undo, redo, clear, redoEnabled, undoEnabled] =
+    useHistory([]);
   const [tool, setTool] = useState<ICanvasTools>("brush");
   const [selectedElement, setSelectedElement] = useState(null);
   const textAreaRef = useRef(null);
@@ -21,15 +22,48 @@ export default function Canvas() {
   const generator = rough.generator();
 
   const createElement = (id, x1, y1, x2, y2, type) => {
+    const options = {
+      stroke: appState.activeColor,
+      strokeWidth: appState.stroke,
+      fill: appState.fill ? appState.activeColor : "",
+    };
     switch (type) {
       case "line":
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.line(x1, y1, x2, y2, options),
+        };
       case "rectangle":
-        const roughElement =
-          type === "line"
-            ? generator.line(x1, y1, x2, y2)
-            : generator.rectangle(x1, y1, x2 - x1, y2 - y1);
-        return { id, x1, y1, x2, y2, type, roughElement };
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.rectangle(x1, y1, x2 - x1, y2 - y1, options),
+        };
+      case "circle":
+        return {
+          id,
+          x1,
+          y1,
+          x2,
+          y2,
+          type,
+          roughElement: generator.circle(x1, y1, x2 - x1, {
+            //  x2 - x1
+            fill: appState.activeColor,
+            fillWeight: appState.stroke, // thicker lines for hachure
+          }),
+        };
       case "brush":
+      case "eraser":
         return { id, type, points: [{ x: x1, y: y1 }] };
       case "text":
         return { id, type, x1, y1, x2, y2, text: "" };
@@ -58,6 +92,11 @@ export default function Canvas() {
         const start = nearPoint(x, y, x1, y1, "start");
         const end = nearPoint(x, y, x2, y2, "end");
         return start || end || on;
+      case "circle":
+        // return x >= x1 && x <= x2 && y >= y1 && y <= y2
+        return x <= x2 && x >= -(x1 - x2) && y >= y2 && y <= -(y1 - y2)
+          ? "inside"
+          : null;
       case "rectangle":
         const topLeft = nearPoint(x, y, x1, y1, "tl");
         const topRight = nearPoint(x, y, x2, y1, "tr");
@@ -67,6 +106,7 @@ export default function Canvas() {
           x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
         return topLeft || topRight || bottomLeft || bottomRight || inside;
       case "brush":
+      case "eraser":
         const betweenAnyPoint = element.points.some((point, index) => {
           const nextPoint = element.points[index + 1];
           if (!nextPoint) return false;
@@ -164,10 +204,18 @@ export default function Canvas() {
     switch (element.type) {
       case "line":
       case "rectangle":
+      case "circle":
         roughCanvas.draw(element.roughElement);
         break;
       case "brush":
-        const stroke = getSvgPathFromStroke(getStroke(element.points));
+      case "eraser":
+        const stroke = getSvgPathFromStroke(
+          getStroke(element.points, {
+            size: appState.stroke,
+          })
+        );
+        context.fillStyle =
+          element.type === "eraser" ? "#00000042" : appState.activeColor;
         context.fill(new Path2D(stroke));
         break;
       case "text":
@@ -178,53 +226,14 @@ export default function Canvas() {
       default:
         throw new Error(`Type not recognised: ${element.type}`);
     }
+    updateAppState({
+      ...appState,
+      redoEnabled: redoEnabled(),
+      rundoEnabled: undoEnabled(),
+      selectedTool: tool,
+    });
   };
   const adjustmentRequired = (type) => ["line", "rectangle"].includes(type);
-
-  useEffect(() => {
-    if (window) {
-      const canvas: HTMLCanvasElement = canvasRef.current;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const context: any = canvas.getContext("2d");
-      ctxRef.current = context;
-
-      const roughCanvas = rough.canvas(canvas);
-
-      elements.forEach((element) => {
-        if (action === "writing" && selectedElement.id === element.id) return;
-        drawElement(roughCanvas, context, element);
-      });
-    }
-  }, [elements, action, selectedElement]);
-
-  useEffect(() => {
-    const undoRedoFunction = (event) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "z") {
-        if (event.shiftKey) {
-          redo();
-        } else {
-          undo();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", undoRedoFunction);
-    return () => {
-      document.removeEventListener("keydown", undoRedoFunction);
-    };
-  }, [undo, redo]);
-
-  useEffect(() => {
-    if (textAreaRef.current) {
-      const textArea: any = textAreaRef.current;
-      if (action === "writing") {
-        textArea?.focus();
-        textArea.value = selectedElement.text;
-      }
-    }
-  }, [action, selectedElement]);
 
   const updateElement = (id, x1, y1, x2, y2, type, options = { text: "" }) => {
     const elementsCopy = [...elements];
@@ -232,9 +241,11 @@ export default function Canvas() {
     switch (type) {
       case "line":
       case "rectangle":
+      case "circle":
         elementsCopy[id] = createElement(id, x1, y1, x2, y2, type);
         break;
       case "brush":
+      case "eraser":
         elementsCopy[id].points = [
           ...elementsCopy[id].points,
           { x: x2, y: y2 },
@@ -394,22 +405,75 @@ export default function Canvas() {
   };
 
   useEffect(() => {
+    if (window) {
+      const canvas: HTMLCanvasElement = canvasRef.current;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const context: any = canvas.getContext("2d");
+      ctxRef.current = context;
+
+      const roughCanvas = rough.canvas(canvas);
+
+      elements.forEach((element) => {
+        if (action === "writing" && selectedElement.id === element.id) return;
+        drawElement(roughCanvas, context, element);
+      });
+    }
+  }, [elements, action, selectedElement]);
+
+  useEffect(() => {
+    const undoRedoFunction = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "z") {
+        if (event.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", undoRedoFunction);
+    return () => {
+      document.removeEventListener("keydown", undoRedoFunction);
+    };
+  }, [undo, redo]);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const textArea: any = textAreaRef.current;
+      if (action === "writing") {
+        textArea?.focus();
+        textArea.value = selectedElement.text;
+      }
+    }
+  }, [action, selectedElement]);
+
+  useEffect(() => {
     switch (appState.selectedTool) {
       case "clear":
         clear();
-        updateAppState({ selectedTool: tool });
+        updateAppState({ ...appState, selectedTool: tool });
         return;
       case "undo":
         undo();
-        updateAppState({ selectedTool: tool });
+        updateAppState({
+          ...appState,
+          undoEnabled: undoEnabled(),
+          selectedTool: tool,
+        });
         return;
       case "redo":
         redo();
-        updateAppState({ selectedTool: tool });
+        updateAppState({
+          ...appState,
+          redoEnabled: redoEnabled(),
+          selectedTool: tool,
+        });
         return;
       case "stroke":
         // updateStroke();
-        updateAppState({ selectedTool: tool });
+        updateAppState({ ...appState, selectedTool: tool });
         return;
       case "text":
         setAction("writing");
@@ -435,8 +499,8 @@ export default function Canvas() {
           onBlur={handleBlur}
           style={{
             position: "fixed",
-            top: selectedElement.y1 - 2,
-            left: selectedElement.x1,
+            // top: selectedElement.y1 - 2,
+            // left: selectedElement.x1,
             font: "24px sans-serif",
             margin: 0,
             padding: 0,
