@@ -1,7 +1,9 @@
 import cl from "classnames";
+import { useEffect, useState } from "react";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 
 const IndexPage = () => {
+  const [passThrough, setPassThrough] = useState(false);
   const appState = useAppState();
   const updateAppState = useUpdateAppState();
   const tools = [
@@ -175,39 +177,39 @@ const IndexPage = () => {
     //     </svg>
     //   ),
     // },
-    {
-      title: "Cursor Highlight",
-      id: "cursor-highlight",
-      icon: () => (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M14.166 14.1667L17.4993 17.5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M8.33203 8.33337L12.4982 18.3334L13.9773 13.9786L18.332 12.4995L8.33203 8.33337Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M9.18424 8.27298L7.95529 7.96154L8.2741 9.1886L9.55595 14.1222C8.48819 14.3478 7.3739 14.2746 6.33794 13.9036C5.08239 13.454 4.01557 12.5934 3.3105 11.4614C2.60544 10.3294 2.3035 8.99236 2.45364 7.66722C2.60379 6.34207 3.19723 5.10651 4.1377 4.16095C5.07817 3.21539 6.31051 2.6153 7.63482 2.458C8.95914 2.3007 10.2978 2.59542 11.4336 3.29437C12.5694 3.99331 13.4357 5.05548 13.8921 6.30858C14.2687 7.34266 14.3479 8.4567 14.1279 9.5258L9.18424 8.27298Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-        </svg>
-      ),
-    },
+    // {
+    //   title: "Cursor Highlight",
+    //   id: "cursor-highlight",
+    //   icon: () => (
+    //     <svg
+    //       width="20"
+    //       height="20"
+    //       viewBox="0 0 20 20"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <path
+    //         d="M14.166 14.1667L17.4993 17.5"
+    //         stroke="currentColor"
+    //         strokeWidth="1.5"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M8.33203 8.33337L12.4982 18.3334L13.9773 13.9786L18.332 12.4995L8.33203 8.33337Z"
+    //         stroke="currentColor"
+    //         strokeWidth="1.5"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M9.18424 8.27298L7.95529 7.96154L8.2741 9.1886L9.55595 14.1222C8.48819 14.3478 7.3739 14.2746 6.33794 13.9036C5.08239 13.454 4.01557 12.5934 3.3105 11.4614C2.60544 10.3294 2.3035 8.99236 2.45364 7.66722C2.60379 6.34207 3.19723 5.10651 4.1377 4.16095C5.07817 3.21539 6.31051 2.6153 7.63482 2.458C8.95914 2.3007 10.2978 2.59542 11.4336 3.29437C12.5694 3.99331 13.4357 5.05548 13.8921 6.30858C14.2687 7.34266 14.3479 8.4567 14.1279 9.5258L9.18424 8.27298Z"
+    //         stroke="currentColor"
+    //         strokeWidth="1.5"
+    //       />
+    //     </svg>
+    //   ),
+    // },
     {
       title: "Cursor Focus",
       id: "cursor-focus",
@@ -249,6 +251,12 @@ const IndexPage = () => {
           </defs>
         </svg>
       ),
+      onclick: () => {
+        updateAppState({
+          ...appState,
+          cursorFocus: !appState.cursorFocus,
+        });
+      },
     },
     // {
     //   title: "Arrow",
@@ -272,13 +280,49 @@ const IndexPage = () => {
     //   ),
     // },
   ];
+
+  useEffect(() => {
+    const handleMessage = (_event, args) => {};
+    // add a listener to 'message' channel
+    global.ipcRenderer.addListener("message", handleMessage);
+
+    return () => {
+      global.ipcRenderer.removeListener("message", handleMessage);
+    };
+  }, []);
+  const togglePassthrough = () => {
+    global.ipcRenderer.send("toggle-passthrough");
+  };
   return (
-    <div id="toolbar">
+    <div id="toolbar" className="px-2">
+      <div
+        className={cl(
+          "relative transition-all delay-75 h-7 w-12 border-2 border-neutral-100 p-1 rounded-full flex align-middle",
+          passThrough
+            ? "justify-end bg-blue-200 border-blue-400 border-2"
+            : "justify-start"
+        )}
+        onClick={() => {
+          setPassThrough((prvState) => {
+            // call electron api
+            togglePassthrough();
+            return !prvState;
+          });
+        }}
+      >
+        <span
+          className={cl(
+            "inline-block rounded-full h-4 w-4  ",
+            passThrough ? " bg-blue-900" : "bg-neutral-200"
+          )}
+        />
+      </div>
       <div className="colors">
+        {console.log(appState.primaryColor === appState.activeColor)}
         <div
           className={cl(
             appState.primaryColor === appState.activeColor
-              ? "color border-2 border-white shadow-sm"
+              ? "color border-[1px] border-black dark:border-white shadow-sm"
               : "color"
           )}
           id="primary-color"
@@ -289,7 +333,7 @@ const IndexPage = () => {
         <div
           className={cl(
             appState.secondaryColor === appState.activeColor
-              ? "color border-2 border-white shadow-sm"
+              ? "color border-[1px] border-black dark:border-white shadow-sm"
               : "color"
           )}
           id="secondary-color"
@@ -303,7 +347,7 @@ const IndexPage = () => {
         <div
           className={cl(
             appState.ternaryColor === appState.activeColor
-              ? "color border-2 border-white shadow-sm"
+              ? "color border-[1px] border-black dark:border-white shadow-sm"
               : "color"
           )}
           id="ternary-color"
@@ -317,22 +361,31 @@ const IndexPage = () => {
         <button
           key={`tool-${tool.id}`}
           className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${
-            appState.selectedTool === tool.id &&
-            "dark:text-neutral-50 text-neutral-900"
+            appState.selectedTool === tool.id ||
+            (appState.cursorFocus && tool.id === "cursor-focus")
+              ? "dark:text-neutral-50 text-neutral-900"
+              : ""
           }`}
           id={tool.id}
           title={tool.title}
-          onClick={() => {
-            updateAppState({
-              ...appState,
-              selectedTool: tool.id,
-            });
-          }}
+          onClick={
+            tool.onclick
+              ? tool.onclick
+              : () => {
+                  updateAppState({
+                    ...appState,
+                    selectedTool: tool.id,
+                  });
+                }
+          }
         >
           {tool.icon()}
         </button>
       ))}
       <div className="separator"></div>
+      <span className="text-neutral-800  dark:text-neutral-100">
+        {appState.stroke}
+      </span>
       <input
         type={"range"}
         max="50"
@@ -346,6 +399,16 @@ const IndexPage = () => {
           });
         }}
       />
+      <span
+        className={cl(
+          "p-2 rounded  border-2 border-neutral-800 dark:border-neutral-100",
+          appState.fill && "bg-indigo-500"
+        )}
+        onClick={() => {
+          updateAppState({ ...appState, fill: !appState.fill });
+        }}
+      />
+
       <div className="separator"></div>
 
       <button

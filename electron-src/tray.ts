@@ -16,6 +16,7 @@ const getContextMenu = () => {
       label: "Toggle Annotate",
       click: () => {
         windowManager.main?.toggleView();
+        windowManager.canvas?.toggleView();
       },
     },
     {

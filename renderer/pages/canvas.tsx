@@ -1,11 +1,5 @@
 import getStroke from "perfect-freehand";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.cjs";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 import { useHistory } from "../hooks/useHistory";
@@ -31,6 +25,12 @@ export default function Canvas() {
   const textAreaRef = useRef(null);
   const canvasRef = useRef(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  const canvasCursorRef = useRef(null);
+  const ctxCursorRef = useRef<CanvasRenderingContext2D | null>(null);
+
+  const roughCanvasRef = useRef(null);
+
   const generator = rough.generator();
 
   const createElement = (newElement: IElement) => {
@@ -110,6 +110,7 @@ export default function Canvas() {
         );
         context.fillStyle =
           element.type === "eraser" ? "#00000042" : element.options.stroke;
+        // ctxCursorRef.current.fillStyle = "#00000087";
         context.fill(new Path2D(stroke));
         break;
       case "text":
@@ -176,6 +177,10 @@ export default function Canvas() {
   };
 
   const handleMouseDown = (event) => {
+    //highlight(event);
+    if (appState.cursorFocus) {
+      highlight(event);
+    }
     if (action === "writing") return;
     const { clientX, clientY } = event;
     if (tool === "selection") {
@@ -220,8 +225,10 @@ export default function Canvas() {
   };
 
   const handleMouseMove = (event) => {
+    if (appState.cursorFocus) {
+      focus(event);
+    }
     const { clientX, clientY } = event;
-
     if (tool === "selection") {
       const element = getElementAtPosition(clientX, clientY, elements);
       event.target.style.cursor = element
@@ -245,9 +252,6 @@ export default function Canvas() {
         };
         setElements(elementsCopy, true);
       } else {
-        console.log("====================================");
-        console.log(selectedElement);
-        console.log("====================================");
         const { id, x1, x2, y1, y2, type, offsetX, offsetY, options } =
           selectedElement;
         const width = x2 - x1;
@@ -315,8 +319,57 @@ export default function Canvas() {
     });
   };
 
+  const getMousePos = (canvas, evt) => {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top,
+    };
+  };
+
+  // Focus canvas (highlight cursor)
+  const focus = (e) => {
+    if (ctxCursorRef.current) {
+      ctxCursorRef.current.clearRect(
+        0,
+        0,
+        canvasCursorRef.current.width,
+        canvasCursorRef.current.height
+      );
+      ctxCursorRef.current.beginPath();
+      ctxCursorRef.current.rect(
+        0,
+        0,
+        canvasCursorRef.current.width,
+        canvasCursorRef.current.height
+      );
+      ctxCursorRef.current.globalCompositeOperation = "source-over";
+      ctxCursorRef.current.fill();
+      ctxCursorRef.current.beginPath();
+      const pos = getMousePos(canvasCursorRef.current, e);
+      ctxCursorRef.current.fillStyle = "#0000009e";
+      ctxCursorRef.current.arc(pos.x, pos.y, 70, 0, 2 * Math.PI); // x,y,diameter
+      ctxCursorRef.current.globalCompositeOperation = "destination-out";
+      ctxCursorRef.current.fill();
+    }
+  };
+
+  const highlight = (e) => {
+    // const highlight: any = document.getElementsByClassName("highlight");
+    // highlight.style.top = e.clientY + window.innerHeight - 15 + "px";
+    // highlight.style.left = e.clientX + innerWidth - 15 + "px";
+    // $("#"+uniqueid+" #click-highlight").css("top", e.clientY+$(window).scrollTop()-15+"px");
+    // $("#"+uniqueid+" #click-highlight").css("left", e.clientX+$(window).scrollLeft()-15+"px");
+    // $("#"+uniqueid+" #click-highlight").addClass("show-click");
+  };
+
   useEffect(() => {
     if (window) {
+      const canvasFocus = canvasCursorRef.current;
+      canvasFocus.height = window.innerHeight;
+      canvasFocus.width = window.innerWidth;
+      ctxCursorRef.current = canvasFocus.getContext("2d");
+
       const canvas: HTMLCanvasElement = canvasRef.current;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -325,7 +378,7 @@ export default function Canvas() {
       ctxRef.current = context;
 
       const roughCanvas = rough.canvas(canvas);
-
+      roughCanvasRef.current = roughCanvas;
       elements.forEach((element) => {
         if (action === "writing" && selectedElement.id === element.id) return;
         drawElementOnCanvas(roughCanvas, context, element);
@@ -361,6 +414,14 @@ export default function Canvas() {
   }, [action, selectedElement]);
 
   useEffect(() => {
+    if (!appState.currentFocus) {
+      ctxCursorRef.current.clearRect(
+        0,
+        0,
+        canvasCursorRef.current.width,
+        canvasCursorRef.current.height
+      );
+    }
     switch (appState.selectedTool) {
       case "clear":
         clear();
@@ -397,9 +458,17 @@ export default function Canvas() {
 
   return (
     <>
+      <span className="highlight" />
+      <canvas
+        id="canvas-cursor"
+        ref={canvasCursorRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      />
       <canvas
         ref={canvasRef}
-        id="canvas"
+        id="canvas-draw"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

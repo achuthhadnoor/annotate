@@ -11,14 +11,16 @@ const open = () => {
   const { height, width } = bounds;
   window = new BrowserWindow({
     y: height - 200,
-    x: width / 2 - 400,
-    width: 840,
+    x: width / 2 - 450,
+    width: 900,
     height: 50,
     vibrancy: "sidebar",
     transparent: true,
     frame: false,
     show: false,
-    // kiosk:true,
+    // kiosk: true,
+    // fullscreenable: false,
+    // fullscreen: false,
     skipTaskbar: true,
     resizable: false,
     webPreferences: {

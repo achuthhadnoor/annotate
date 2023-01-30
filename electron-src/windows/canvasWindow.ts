@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from "electron";
+import { BrowserWindow, ipcMain, screen } from "electron";
 import { is } from "electron-util";
 import { join } from "path";
 import { format } from "url";
@@ -57,6 +57,10 @@ const clickThrough = () => {
   });
 };
 const closeAll = () => {};
+
+ipcMain.on("toggle-passthrough", () => {
+  clickThrough();
+});
 
 export default windowManager.setCanvasWindow({
   open,

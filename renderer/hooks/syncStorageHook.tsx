@@ -13,6 +13,8 @@ export interface IAppState {
 
 export const defaultState = {
   selectedTool: "brush",
+  cursorFocus: false,
+  cursorHighlight: false,
   stroke: 3,
   fill: false,
   undoEnabled: true,
