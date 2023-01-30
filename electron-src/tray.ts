@@ -1,4 +1,4 @@
-import { Menu, Tray } from "electron";
+import { Menu, nativeImage, Tray } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 import { join } from "path";
 import { windowManager } from "./windows/windowManager";
@@ -18,20 +18,76 @@ const getContextMenu = () => {
         windowManager.main?.toggleView();
         windowManager.canvas?.toggleView();
       },
-    },
-    {
-      label: "Toggle pass Through",
-      click: () => {
-        windowManager.canvas?.clickThrough();
-      },
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/openTemplate.png")
+      ),
     },
     {
       type: "separator",
     },
     {
-      role: "about",
+      label: "Send Feedback",
+      click: () => {
+        windowManager.feedback?.open();
+      },
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/feedbackTemplate.png")
+      ),
     },
     {
+      label: "Manual",
+      click: () => {},
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/manualTemplate.png")
+      ),
+    },
+    {
+      label: "Troubleshooting",
+      click: () => {},
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/troubleTemplate.png")
+      ),
+    },
+    {
+      type: "separator",
+    },
+    {
+      label: "Subscribe for Updates",
+      click: () => {},
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/subscribeTemplate.png")
+      ),
+    },
+    {
+      label: "Follow us",
+      click: () => {},
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/followTemplate.png")
+      ),
+    },
+    {
+      type: "separator",
+    },
+    {
+      label: "Version 0.0.1",
+      enabled: false,
+    },
+    {
+      role: "about",
+      click: () => {},
+    },
+    {
+      label: "Check For Updates",
+    },
+    // {
+    //   label: "Settings..",
+    //   accelerator: "meta + ,",
+    // },
+    {
+      type: "separator",
+    },
+    {
+      label: "Quit",
       role: "quit",
     },
   ];

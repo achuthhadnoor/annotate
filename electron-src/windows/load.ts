@@ -1,2 +1,3 @@
-import './mainWindow';
+import "./mainWindow";
 import "./canvasWindow";
+import "./feedbackWindow";

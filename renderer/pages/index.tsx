@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 
 const IndexPage = () => {
-  const [passThrough, setPassThrough] = useState(false);
+  const [passThrough, setPassThrough] = useState(true);
   const appState = useAppState();
   const updateAppState = useUpdateAppState();
   const tools = [
@@ -297,10 +297,10 @@ const IndexPage = () => {
     <div id="toolbar" className="px-2">
       <div
         className={cl(
-          "relative transition-all delay-75 h-7 w-12 border-2 border-neutral-100 p-1 rounded-full flex align-middle",
+          "relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
           passThrough
-            ? "justify-end bg-blue-200 border-blue-400 border-2"
-            : "justify-start"
+            ? "justify-end bg-blue-200 border-blue-400  border-2"
+            : "justify-start border-neutral-900 dark:border-neutral-100"
         )}
         onClick={() => {
           setPassThrough((prvState) => {
@@ -313,7 +313,7 @@ const IndexPage = () => {
         <span
           className={cl(
             "inline-block rounded-full h-4 w-4  ",
-            passThrough ? " bg-blue-900" : "bg-neutral-200"
+            passThrough ? " bg-blue-900" : "bg-neutral-900 dark:bg-neutral-200"
           )}
         />
       </div>

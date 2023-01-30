@@ -44,11 +44,14 @@ export default function Canvas() {
         });
         break;
       case "rectangle":
+        console.log(options.fill ? options : "");
+
         roughElement = generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
           roughness: 2.8,
           stroke: options.stroke,
           strokeWidth: options.strokeWidth,
-          fill: options.fill ? options.activeColor : "",
+          fill: options.fill ? appState.activeColor : "",
+          fillWidth: options.strokeWidth,
         });
         break;
       case "circle":
@@ -136,9 +139,6 @@ export default function Canvas() {
       case "line":
       case "rectangle":
       case "circle":
-        console.log("====================================");
-        console.log(options);
-        console.log("====================================");
         elementsCopy[id] = createElement({ id, x1, y1, x2, y2, type, options });
         break;
       case "brush":

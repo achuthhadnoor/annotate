@@ -23,11 +23,17 @@ export interface onboardWindowManager {
   ) => { isValid: boolean; message: string };
   checkUserExist?: (userData: any) => boolean;
 }
+export interface feedbackWindowManager {
+  open: () => void;
+  close: () => void;
+  isOpen: () => boolean;
+}
 
 export class WindowManager {
   main?: mainWindowManager;
   canvas?: canvasWindowManager;
   onboard?: onboardWindowManager;
+  feedback?: feedbackWindowManager;
 
   closeAll = () => {
     this.main?.close();
@@ -42,6 +48,9 @@ export class WindowManager {
   };
   setOnboardWindow = (onboardManager: onboardWindowManager) => {
     this.onboard = onboardManager;
+  };
+  setFeedbackWindow = (feedbackManager: feedbackWindowManager) => {
+    this.feedback = feedbackManager;
   };
 }
 

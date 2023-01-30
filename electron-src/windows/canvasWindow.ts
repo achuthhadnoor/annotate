@@ -55,6 +55,8 @@ const clickThrough = () => {
   window?.setIgnoreMouseEvents(canvasPassThrough, {
     forward: canvasPassThrough,
   });
+  // hide window to fix the bug for canvas draw
+  // canvasPassThrough ? window?.show() : window?.hide();
 };
 const closeAll = () => {};
 

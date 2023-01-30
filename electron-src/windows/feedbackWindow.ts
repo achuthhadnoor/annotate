@@ -1,19 +1,21 @@
-import { BrowserWindow, screen } from "electron";
+import { BrowserWindow } from "electron";
 import { is } from "electron-util";
 import { join } from "path";
 import { format } from "url";
 import { windowManager } from "./windowManager";
 
 let window: BrowserWindow | null = null;
+let isFeedbackOpen = false;
 
 const open = () => {
-  const { bounds } = screen.getPrimaryDisplay();
-  const { height, width } = bounds;
+  if (isFeedbackOpen) {
+    window?.show();
+    return;
+  }
+  isFeedbackOpen = true;
   window = new BrowserWindow({
-    y: height - 200,
-    x: width / 2 - 450,
-    width: 900,
-    height: 50,
+    width: 200,
+    height: 200,
     vibrancy: "sidebar",
     transparent: true,
     frame: false,
@@ -21,8 +23,7 @@ const open = () => {
     // kiosk: true,
     // fullscreenable: false,
     // fullscreen: false,
-    hasShadow: false,
-    skipTaskbar: true,
+    // skipTaskbar: true,
     resizable: false,
     webPreferences: {
       nodeIntegration: false,
@@ -31,9 +32,9 @@ const open = () => {
     },
   });
   const url = is.development
-    ? "http://localhost:8000/"
+    ? "http://localhost:8000/feedback"
     : format({
-        pathname: join(__dirname, "../../renderer/out/index.html"),
+        pathname: join(__dirname, "../../renderer/out/feedback.html"),
         protocol: "file:",
         slashes: true,
       });
@@ -47,17 +48,15 @@ const open = () => {
     window?.show();
   });
 };
+
 const close = () => {
   window?.close();
 };
-const isOpen = () => true;
-const toggleView = () => {
-  window?.isVisible() ? window?.hide() : window?.show();
-};
 
-export default windowManager.setMainWindow({
+const isOpen = () => isFeedbackOpen;
+
+export default windowManager.setFeedbackWindow({
   open,
   close,
   isOpen,
-  toggleView,
 });
