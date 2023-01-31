@@ -293,6 +293,23 @@ const IndexPage = () => {
   const togglePassthrough = () => {
     global.ipcRenderer.send("toggle-passthrough");
   };
+
+  const updateGlobalState = (action: string, options?: any) => {
+    // cursor: url("data:image/svg+xml,%3Csvg width='19' height='19' viewBox='0 0 19 19' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.75 1.25L7.25 2.25L15.25 10.25L16.8358 11.8358C17.6168 12.6168 17.6168 13.8832 16.8358 14.6642L15.6642 15.8358C14.8832 16.6168 13.6168 16.6168 12.8358 15.8358L11.25 14.25L3.25 6.25L1.75 1.25Z' fill='white'/%3E%3Cpath d='M15.25 10.25L7.25 2.25L1.75 1.25L3.25 6.25L11.25 14.25M15.25 10.25L16.8358 11.8358C17.6168 12.6168 17.6168 13.8832 16.8358 14.6642L15.6642 15.8358C14.8832 16.6168 13.6168 16.6168 12.8358 15.8358L11.25 14.25M15.25 10.25L11.25 14.25' stroke='black'/%3E%3C/svg%3E%0A"),
+    // auto;
+    switch (action) {
+      case "passthrough":
+        setPassThrough((prvState) => {
+          // call electron api
+          togglePassthrough();
+          return !prvState;
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <div id="toolbar" className="px-2">
       <div
@@ -303,11 +320,7 @@ const IndexPage = () => {
             : "justify-start border-neutral-900 dark:border-neutral-100"
         )}
         onClick={() => {
-          setPassThrough((prvState) => {
-            // call electron api
-            togglePassthrough();
-            return !prvState;
-          });
+          updateGlobalState("passthrough");
         }}
       >
         <span

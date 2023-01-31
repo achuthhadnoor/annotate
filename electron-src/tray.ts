@@ -1,14 +1,15 @@
-import { Menu, nativeImage, Tray } from "electron";
+import { app, Menu, nativeImage, shell, Tray } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 import { join } from "path";
+// import macosRelease from "./macos-release";
 import { windowManager } from "./windows/windowManager";
 
 let tray: Tray | null = null;
-// let active = false;
-
-// const trayImage = (path:string)=>{
-//     return nativeImage.createFromPath(join(__dirname,path)).resize({height:16,width:16})
-// }
+const email = "a@abc.com";
+// const release = macosRelease();
+const checkForUpdates = () => {
+  // get latest version number and compare with app.getVersion() and send notification to user
+};
 
 const getContextMenu = () => {
   const template: MenuItemConstructorOptions[] = [
@@ -21,29 +22,39 @@ const getContextMenu = () => {
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/openTemplate.png")
       ),
+      accelerator: "meta+option+a",
     },
     {
       type: "separator",
     },
     {
-      label: "Send Feedback",
+      label: "Send Feedback", // send to google sheet
       click: () => {
-        windowManager.feedback?.open();
+        // windowManager.feedback?.open();
+        shell.openExternal(
+          `https://annotate.achuth.dev/feeback?version=${app.getVersion()}&email=${email}`
+        );
       },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/feedbackTemplate.png")
       ),
     },
     {
-      label: "Manual",
-      click: () => {},
+      label: "Guide", // keyboard shortcuts and settings
+      click: () => {
+        shell.openExternal(
+          "https://achuth.notion.site/Guide-31322c68e03e45299b420ef50a32909d"
+        );
+      },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/manualTemplate.png")
       ),
     },
     {
-      label: "Troubleshooting",
-      click: () => {},
+      label: "Give a tip!", // Buy me a coffee
+      click: () => {
+        shell.openExternal("https://www.buymeacoffee.com/achuthhadnoor");
+      },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/troubleTemplate.png")
       ),
@@ -52,15 +63,28 @@ const getContextMenu = () => {
       type: "separator",
     },
     {
+      label: "View Roadmap",
+      click: () => {
+        shell.openExternal("https://annotate.achuth.dev/link?rel=roadmap"); // notion page
+      },
+      icon: nativeImage.createFromPath(
+        join(__dirname, "../assets/subscribeTemplate.png")
+      ),
+    },
+    {
       label: "Subscribe for Updates",
-      click: () => {},
+      click: () => {
+        shell.openExternal("https://annotate.achuth.dev/link=newsletter "); // https://achuth.substack.com
+      },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/subscribeTemplate.png")
       ),
     },
     {
       label: "Follow us",
-      click: () => {},
+      click: () => {
+        shell.openExternal("https://twitter.com/achuth_hadnoor");
+      },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/followTemplate.png")
       ),
@@ -69,15 +93,20 @@ const getContextMenu = () => {
       type: "separator",
     },
     {
-      label: "Version 0.0.1",
+      label: `Version ${app.getVersion()}`,
       enabled: false,
     },
     {
-      role: "about",
-      click: () => {},
+      label: "About",
+      click: () => {
+        shell.openExternal("https://annotate.achuth.dev");
+      },
     },
     {
       label: "Check For Updates",
+      click: () => {
+        checkForUpdates();
+      },
     },
     // {
     //   label: "Settings..",
@@ -89,6 +118,7 @@ const getContextMenu = () => {
     {
       label: "Quit",
       role: "quit",
+      accelerator: "meta+q",
     },
   ];
   return Menu.buildFromTemplate(template);
@@ -97,6 +127,6 @@ const getContextMenu = () => {
 export const initializeTray = () => {
   tray = new Tray(join(__dirname, "../assets/annotateTemplate.png"));
   // tray.setTitle("◉"); // ◎
-  tray.setToolTip("lapse");
+  tray.setToolTip("Annotate");
   tray.setContextMenu(getContextMenu());
 };

@@ -6,7 +6,7 @@ import { windowManager } from "./windowManager";
 
 let window: BrowserWindow | null = null;
 let canvasPassThrough = false;
-
+let isOpen = false;
 const open = () => {
   const { bounds } = screen.getPrimaryDisplay();
   const { height, width } = bounds;
@@ -28,6 +28,7 @@ const open = () => {
       preload: join(__dirname, "../preload"),
     },
   });
+  isOpen = true;
   const url = is.development
     ? "http://localhost:8000/canvas"
     : format({
@@ -48,8 +49,11 @@ const open = () => {
   });
 };
 const close = () => {};
-const isCanvasOpen = () => true;
-const toggleView = () => {};
+const isCanvasOpen = () => isOpen;
+const toggleView = () => {
+  isOpen ? window?.hide() : window?.show();
+  isOpen = !isOpen;
+};
 const clickThrough = () => {
   canvasPassThrough = canvasPassThrough ? false : true;
   window?.setIgnoreMouseEvents(canvasPassThrough, {
