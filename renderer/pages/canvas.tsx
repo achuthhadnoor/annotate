@@ -44,8 +44,6 @@ export default function Canvas() {
         });
         break;
       case "rectangle":
-        console.log(options.fill ? options : "");
-
         roughElement = generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
           roughness: 2.8,
           stroke: options.stroke,

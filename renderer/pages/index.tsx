@@ -331,7 +331,6 @@ const IndexPage = () => {
         />
       </div>
       <div className="colors">
-        {console.log(appState.primaryColor === appState.activeColor)}
         <div
           className={cl(
             appState.primaryColor === appState.activeColor
