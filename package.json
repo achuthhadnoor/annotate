@@ -5,6 +5,11 @@
   "main": "main/index.js",
   "productName": "Annotate",
   "description": "A small utility app to boost your video calls and screen sharing.",
+  "author": {
+    "name": "Achuth Hadnoor",
+    "email": "hey@achuth.dev",
+    "url": "https://achuth.dev"
+  },
   "scripts": {
     "start": "next build renderer && next start renderer",
     "clean": "rimraf dist main renderer/out renderer/.next",
