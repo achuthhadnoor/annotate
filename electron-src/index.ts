@@ -6,6 +6,10 @@ import "./windows/load";
 
 if (app.dock) app.dock.hide();
 
+app.on("second-instance", () => {
+  app.quit();
+});
+
 app.whenReady().then(async () => {
   await prepareNext("./renderer");
   initializeTray();
