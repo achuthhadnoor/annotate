@@ -5,7 +5,7 @@ import { join } from "path";
 import { windowManager } from "./windows/windowManager";
 
 let tray: Tray | null = null;
-const email = "a@abc.com";
+// const email = "a@abc.com";
 // const release = macosRelease();
 const checkForUpdates = () => {
   // get latest version number and compare with app.getVersion() and send notification to user
@@ -32,7 +32,8 @@ const getContextMenu = () => {
       click: () => {
         // windowManager.feedback?.open();
         shell.openExternal(
-          `https://annotate.achuth.dev/feeback?version=${app.getVersion()}&email=${email}`
+          // `https://annotate.achuth.dev/feeback?version=${app.getVersion()}&email=${email}`
+          `mailto:hey@achuth.dev`
         );
       },
       icon: nativeImage.createFromPath(
@@ -62,24 +63,24 @@ const getContextMenu = () => {
     {
       type: "separator",
     },
-    {
-      label: "View Roadmap",
-      click: () => {
-        shell.openExternal("https://annotate.achuth.dev/link?rel=roadmap"); // notion page
-      },
-      icon: nativeImage.createFromPath(
-        join(__dirname, "../assets/subscribeTemplate.png")
-      ),
-    },
-    {
-      label: "Subscribe for Updates",
-      click: () => {
-        shell.openExternal("https://annotate.achuth.dev/link=newsletter "); // https://achuth.substack.com
-      },
-      icon: nativeImage.createFromPath(
-        join(__dirname, "../assets/subscribeTemplate.png")
-      ),
-    },
+    // {
+    //   label: "View Roadmap",
+    //   click: () => {
+    //     shell.openExternal("https://annotate.achuth.dev/link?rel=roadmap"); // notion page
+    //   },
+    //   icon: nativeImage.createFromPath(
+    //     join(__dirname, "../assets/roadmapTemplate.png")
+    //   ),
+    // },
+    // {
+    //   label: "Subscribe for Updates",
+    //   click: () => {
+    //     shell.openExternal("https://annotate.achuth.dev/link=newsletter "); // https://achuth.substack.com
+    //   },
+    //   icon: nativeImage.createFromPath(
+    //     join(__dirname, "../assets/subscribeTemplate.png")
+    //   ),
+    // },
     {
       label: "Follow us",
       click: () => {

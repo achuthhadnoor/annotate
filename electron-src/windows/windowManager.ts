@@ -15,8 +15,9 @@ export interface canvasWindowManager {
 }
 
 export interface onboardWindowManager {
-  open: () => void;
+  open: () => boolean;
   close: () => void;
+  isOpen: () => boolean;
   validate: (
     email: string,
     key: string

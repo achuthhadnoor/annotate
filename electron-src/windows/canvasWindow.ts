@@ -51,7 +51,12 @@ const open = () => {
 const close = () => {};
 const isCanvasOpen = () => isOpen;
 const toggleView = () => {
-  isOpen ? window?.hide() : window?.show();
+  if (isOpen) {
+    window?.hide();
+  } else {
+    window?.show();
+    window?.focusOnWebView();
+  }
   isOpen = !isOpen;
 };
 const clickThrough = () => {

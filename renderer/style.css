@@ -33,7 +33,9 @@ button {
   background: rgb(117 118 175 / 30%);
   border-radius: 5px;
 }
-
+.drag {
+  -webkit-app-region: drag;
+}
 #toolbar {
   user-select: none;
   -webkit-app-region: drag;

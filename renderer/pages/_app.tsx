@@ -4,9 +4,11 @@ import "../style.css";
 export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (window) {
-      window.addEventListener("keydown", (e) => {
-        e.preventDefault();
-        if (e.key === "r" || (e.key === "R" && e.ctrlKey)) {
+      window.addEventListener("keydown", (e: any) => {
+        if (
+          (e.key === "r" && (e.ctrlKey || e.metaKey)) ||
+          (e.key === "R" && (e.ctrlKey || e.metaKey))
+        ) {
           e.preventDefault();
           console.log("ctrl + r");
         }
