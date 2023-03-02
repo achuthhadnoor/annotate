@@ -32,11 +32,11 @@ app.whenReady().then(async () => {
 
 ipcMain.on("activate", () => {
   if (app.dock) app.dock.hide();
-  debugger;
   windowManager.onboard?.close();
   initializeTray();
   windowManager.main?.open();
   windowManager.canvas?.open();
+  store.set("user-info", JSON.stringify(true));
 });
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);

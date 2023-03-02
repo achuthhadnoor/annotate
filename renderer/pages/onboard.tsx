@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 
 export default function Onboard() {
   // const [email, setEmail] = useState("");
@@ -127,13 +126,152 @@ export default function Onboard() {
   return (
     <div className="dark:text-neutral-50 text-neutral-800 relative align-middle items-center justify-center text-center p-5">
       <span className="p-2 absolute top-0 w-full drag left-0" />
-      <Image
-        src="/icon.png"
-        height={"120"}
-        width={"120"}
-        alt="annotate"
-        className="relative left-16 select-none"
-      />
+      <svg
+        width="132"
+        height="132"
+        viewBox="0 0 132 132"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="left-16 relative"
+      >
+        <g filter="url(#filter0_d_5959_265)">
+          <rect
+            width="72"
+            height="72"
+            rx="15"
+            transform="matrix(-1 0 0 1 102 13)"
+            fill="url(#paint0_linear_5959_265)"
+          />
+          <g filter="url(#filter1_di_5959_265)">
+            <path
+              d="M84.7031 64.75L66.7256 36.9406C60.707 27.9442 39.8406 34.3798 50.3482 60.6283L53.0586 61.5048L66.0703 55.8257"
+              stroke="url(#paint1_linear_5959_265)"
+              stroke-width="7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              shape-rendering="crispEdges"
+            />
+          </g>
+        </g>
+        <defs>
+          <filter
+            id="filter0_d_5959_265"
+            x="0"
+            y="0"
+            width="132"
+            height="132"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feMorphology
+              radius="10"
+              operator="dilate"
+              in="SourceAlpha"
+              result="effect1_dropShadow_5959_265"
+            />
+            <feOffset dy="17" />
+            <feGaussianBlur stdDeviation="10" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_5959_265"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_5959_265"
+              result="shape"
+            />
+          </filter>
+          <filter
+            id="filter1_di_5959_265"
+            x="37.9443"
+            y="24.6152"
+            width="56.2588"
+            height="50.6348"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="1" />
+            <feGaussianBlur stdDeviation="3" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_5959_265"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_5959_265"
+              result="shape"
+            />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="4" />
+            <feGaussianBlur stdDeviation="5" />
+            <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="shape"
+              result="effect2_innerShadow_5959_265"
+            />
+          </filter>
+          <linearGradient
+            id="paint0_linear_5959_265"
+            x1="36"
+            y1="0"
+            x2="36"
+            y2="72"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#5DB5FF" />
+            <stop offset="1" stop-color="#2B59FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_5959_265"
+            x1="66.1744"
+            y1="31.0811"
+            x2="66.1744"
+            y2="67.4881"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="white" />
+            <stop offset="1" stop-color="white" stop-opacity="0.78" />
+          </linearGradient>
+        </defs>
+      </svg>
       <h1 className=" relative left-10 scale-75 mb-4">
         <svg
           width="158"
