@@ -25,9 +25,9 @@ const open = () => {
     skipTaskbar: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: false,
-      preload: join(__dirname, "../preload"),
+      nodeIntegration: true,
+      allowRunningInsecureContent: true,
+      preload: join(__dirname, "../preload.js"),
     },
   });
   const url = is.development

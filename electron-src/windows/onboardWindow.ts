@@ -19998,7 +19998,7 @@ let isOpen = false;
 const open = () => {
   window = new BrowserWindow({
     width: 300,
-    height: 300,
+    height: 350,
     vibrancy: "sidebar",
     transparent: true,
     frame: false,
@@ -20008,10 +20008,9 @@ const open = () => {
     roundedCorners: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: false,
+      nodeIntegration: true,
       allowRunningInsecureContent: true,
-      preload: join(__dirname, "../preload"),
+      preload: join(__dirname, "../preload.js"),
     },
   });
   isOpen = true;
@@ -20036,7 +20035,6 @@ const close = () => {
 const isOnboardOpen = () => isOpen;
 const validate = (email: string, key: string) => {
   console.log(email, key);
-  debugger;
   return { isValid: true, message: " string" };
 };
 

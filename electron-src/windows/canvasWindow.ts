@@ -23,9 +23,10 @@ const open = () => {
     skipTaskbar: true,
     resizable: false,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: false,
-      preload: join(__dirname, "../preload"),
+      // devTools: true,
+      nodeIntegration: true,
+      allowRunningInsecureContent: true,
+      preload: join(__dirname, "../preload.js"),
     },
   });
   isOpen = true;

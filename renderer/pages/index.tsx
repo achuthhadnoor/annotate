@@ -1,7 +1,11 @@
 import cl from "classnames";
 import { useEffect, useState } from "react";
 import { useAppState, useUpdateAppState } from "../context/appContext";
-
+declare global {
+  interface Window {
+    electron: any;
+  }
+}
 const IndexPage = () => {
   const [passThrough, setPassThrough] = useState(true);
   const appState = useAppState();
@@ -284,14 +288,14 @@ const IndexPage = () => {
   useEffect(() => {
     const handleMessage = (_event, args) => {};
     // add a listener to 'message' channel
-    global.ipcRenderer.addListener("message", handleMessage);
+    window.electron.ipcRenderer.addEventListener("message", handleMessage);
 
     return () => {
-      global.ipcRenderer.removeListener("message", handleMessage);
+      window.electron.ipcRenderer.removeEventListener("message", handleMessage);
     };
   }, []);
   const togglePassthrough = () => {
-    global.ipcRenderer.send("toggle-passthrough");
+    window.electron.ipcRenderer.send("toggle-passthrough");
   };
 
   const updateGlobalState = (action: string, options?: any) => {
@@ -299,9 +303,9 @@ const IndexPage = () => {
     // auto;
     switch (action) {
       case "passthrough":
+        togglePassthrough();
         setPassThrough((prvState) => {
           // call electron api
-          togglePassthrough();
           return !prvState;
         });
         break;
