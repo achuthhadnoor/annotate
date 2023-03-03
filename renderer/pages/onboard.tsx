@@ -20020,7 +20020,7 @@ export default function Onboard() {
     // https://api.gumroad.com/v2/licenses/verify
     axios
       .post("https://api.gumroad.com/v2/licenses/verify", {
-        product_permalink: "lapse_app",
+        product_permalink: "annotate",
         license_key: code,
         increment_uses_count: true,
         email: email,
