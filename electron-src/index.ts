@@ -20,11 +20,11 @@ export const autoLauncher = new AutoLaunch({
 
 let valid: any = false;
 
-// if (store.get("user-info")) {
-//   valid = store.get("user-info");
-// } else {
-//   store.set("user-info", JSON.stringify(valid));
-// }
+if (store.get("user-info")) {
+  valid = store.get("user-info");
+} else {
+  store.set("user-info", JSON.stringify(valid));
+}
 
 app.on("second-instance", () => {
   app.quit();
