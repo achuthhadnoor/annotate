@@ -20021,6 +20021,7 @@ export default function Onboard() {
     axios
       .post("https://api.gumroad.com/v2/licenses/verify", {
         product_permalink: "annotate",
+        product_id: 'LrMEcF8gPpLG3maDxbDm7A==',
         license_key: code,
         increment_uses_count: true,
         email: email,
