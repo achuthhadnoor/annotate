@@ -5,6 +5,11 @@
   "main": "main/index.js",
   "productName": "Annotate",
   "description": "A small utility app to boost your video calls and screen sharing.",
+  "repository": "https://github.com/achuthhadnoor/annotate_www",
+  "release": {
+    "provider": "github",
+    "releaseType": "release"
+  },
   "author": {
     "name": "Achuth Hadnoor",
     "email": "hey@achuth.dev",

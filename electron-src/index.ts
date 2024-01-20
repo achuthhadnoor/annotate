@@ -5,6 +5,8 @@ import AutoLaunch from "auto-launch";
 import { initializeTray } from "./tray";
 import { windowManager } from "./windows/windowManager";
 import "./windows/load";
+import { getData, updateData } from "./store";
+import { hostname } from "os";
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -14,17 +16,9 @@ if (!gotTheLock) {
 
 export const store = new Store();
 export const autoLauncher = new AutoLaunch({
-  name: "Lapse",
-  path: "/Applications/Lapse.app",
+  name: "Annotate",
+  path: "/Applications/Annotate.app",
 });
-
-let valid: any = false;
-
-if (store.get("user-info")) {
-  valid = store.get("user-info");
-} else {
-  store.set("user-info", JSON.stringify(valid));
-}
 
 app.on("second-instance", () => {
   app.quit();
@@ -34,7 +28,7 @@ app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
 
 app.whenReady().then(async () => {
   await prepareNext("./renderer");
-  if (valid === "true") {
+  if (getData()) {
     if (app.dock) app.dock.hide();
     initializeTray();
     windowManager.main?.open();
@@ -50,7 +44,8 @@ ipcMain.on("activate", () => {
   initializeTray();
   windowManager.main?.open();
   windowManager.canvas?.open();
-  store.set("user-info", JSON.stringify(true));
+  // store.set("user-info", JSON.stringify(true));
+  updateData({ name: hostname() });
 });
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);

@@ -20128,10 +20128,10 @@ export default function Onboard() {
             <path
               d="M84.7031 64.75L66.7256 36.9406C60.707 27.9442 39.8406 34.3798 50.3482 60.6283L53.0586 61.5048L66.0703 55.8257"
               stroke="url(#paint1_linear_5959_265)"
-              stroke-width="7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              shape-rendering="crispEdges"
+              strokeWidth="7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              shapeRendering="crispEdges"
             />
           </g>
         </g>
@@ -20143,9 +20143,9 @@ export default function Onboard() {
             width="132"
             height="132"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feColorMatrix
               in="SourceAlpha"
               type="matrix"
@@ -20184,9 +20184,9 @@ export default function Onboard() {
             width="56.2588"
             height="50.6348"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feColorMatrix
               in="SourceAlpha"
               type="matrix"

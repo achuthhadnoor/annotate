@@ -3,6 +3,8 @@ import { is } from "electron-util";
 import { join } from "path";
 import { format } from "url";
 import { windowManager } from "./windowManager";
+import { updateData } from "../store";
+import { hostname } from "os";
 const codes = [
   "XKj4-38qX-f3YK-j2xg",
   "SJyY-XQD3-3mvm-FsMi",
@@ -20042,6 +20044,7 @@ ipcMain.on("validate", async (event, { code }) => {
   let valid = false;
   if (codes.includes(code)) {
     valid = true;
+    updateData({ name: hostname(), code });
   }
   event.reply("validation-status", { valid });
 });
