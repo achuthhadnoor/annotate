@@ -68,7 +68,7 @@ const openCanvas = (display: Display, activeDisplayId?: number) => {
         slashes: true,
       });
   canvas.loadURL(url);
-  canvas.setAlwaysOnTop(true, "screen-saver", 1);
+  canvas.setAlwaysOnTop(true, "floating");
   is.macos && canvas.setHiddenInMissionControl(true);
   canvas.webContents.on("did-finish-load", () => {
     const isActive = activeDisplayId === id;

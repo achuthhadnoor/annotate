@@ -17,7 +17,7 @@ const getContextMenu = () => {
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/openTemplate.png")
       ),
-      accelerator: "meta+option+a",
+      accelerator: "meta+shift+7",
     },
     {
       type: "separator",
