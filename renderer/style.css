@@ -20,6 +20,9 @@ html {
   overflow: hidden;
   @apply shadow-sm;
 }
+.no-drag {
+  -webkit-app-region: no-drag;
+}
 button {
   -webkit-app-region: no-drag;
   padding: 0px;

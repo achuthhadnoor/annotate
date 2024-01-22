@@ -3,21 +3,16 @@ import { MenuItemConstructorOptions } from "electron/main";
 import { join } from "path";
 // import macosRelease from "./macos-release";
 import { windowManager } from "./windows/windowManager";
+import { checkIsUpdateAvailable, downloadUpdate } from "./lib/update";
 
 let tray: Tray | null = null;
-// const email = "a@abc.com";
-// const release = macosRelease();
-const checkForUpdates = () => {
-  // get latest version number and compare with app.getVersion() and send notification to user
-};
 
 const getContextMenu = () => {
   const template: MenuItemConstructorOptions[] = [
     {
       label: "Toggle Annotate",
       click: () => {
-        windowManager.main?.toggleView();
-        windowManager.canvas?.toggleView();
+        windowManager.toolbar?.toggleView();
       },
       icon: nativeImage.createFromPath(
         join(__dirname, "../assets/openTemplate.png")
@@ -63,24 +58,6 @@ const getContextMenu = () => {
     {
       type: "separator",
     },
-    // {
-    //   label: "View Roadmap",
-    //   click: () => {
-    //     shell.openExternal("https://annotate.achuth.dev/link?rel=roadmap"); // notion page
-    //   },
-    //   icon: nativeImage.createFromPath(
-    //     join(__dirname, "../assets/roadmapTemplate.png")
-    //   ),
-    // },
-    // {
-    //   label: "Subscribe for Updates",
-    //   click: () => {
-    //     shell.openExternal("https://annotate.achuth.dev/link=newsletter "); // https://achuth.substack.com
-    //   },
-    //   icon: nativeImage.createFromPath(
-    //     join(__dirname, "../assets/subscribeTemplate.png")
-    //   ),
-    // },
     {
       label: "Follow us",
       click: () => {
@@ -94,25 +71,20 @@ const getContextMenu = () => {
       type: "separator",
     },
     {
-      label: `Version ${app.getVersion()}`,
-      enabled: false,
-    },
-    {
       label: "About",
       click: () => {
         shell.openExternal("https://annotate.achuth.dev");
       },
     },
     {
-      label: "Check For Updates",
+      label: checkIsUpdateAvailable()
+        ? "Check For Updates"
+        : `Version ${app.getVersion()}`,
+      enabled: checkIsUpdateAvailable(),
       click: () => {
-        checkForUpdates();
+        downloadUpdate();
       },
     },
-    // {
-    //   label: "Settings..",
-    //   accelerator: "meta + ,",
-    // },
     {
       type: "separator",
     },

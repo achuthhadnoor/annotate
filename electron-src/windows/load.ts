@@ -1,4 +1,4 @@
 import "./mainWindow";
-import "./canvasWindow";
+import "./canvas";
 import "./feedbackWindow";
-import "./onboardWindow";
+import "./activation";

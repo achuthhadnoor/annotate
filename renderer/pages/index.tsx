@@ -286,7 +286,7 @@ const IndexPage = () => {
   ];
 
   useEffect(() => {
-    const handleMessage = (_event, args) => {};
+    const handleMessage = (_event, args) => { };
     // add a listener to 'message' channel
     window.electron.ipcRenderer.addEventListener("message", handleMessage);
 
@@ -318,7 +318,7 @@ const IndexPage = () => {
     <div id="toolbar" className="px-2">
       <div
         className={cl(
-          "relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
+          "no-drag relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
           passThrough
             ? "justify-end bg-blue-200 border-blue-400  border-2"
             : "justify-start border-neutral-900 dark:border-neutral-100"
@@ -376,23 +376,22 @@ const IndexPage = () => {
       {tools.map((tool) => (
         <button
           key={`tool-${tool.id}`}
-          className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${
-            appState.selectedTool === tool.id ||
+          className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.selectedTool === tool.id ||
             (appState.cursorFocus && tool.id === "cursor-focus")
-              ? "dark:text-neutral-50 text-neutral-900"
-              : ""
-          }`}
+            ? "dark:text-neutral-50 text-neutral-900"
+            : ""
+            }`}
           id={tool.id}
           title={tool.title}
           onClick={
             tool.onclick
               ? tool.onclick
               : () => {
-                  updateAppState({
-                    ...appState,
-                    selectedTool: tool.id,
-                  });
-                }
+                updateAppState({
+                  ...appState,
+                  selectedTool: tool.id,
+                });
+              }
           }
         >
           {tool.icon()}
@@ -417,7 +416,7 @@ const IndexPage = () => {
       />
       <span
         className={cl(
-          "p-2 rounded  border-2 border-neutral-800 dark:border-neutral-100",
+          "p-2 rounded  border-2 border-neutral-800 dark:border-neutral-100 no-drag",
           appState.fill && "bg-indigo-500"
         )}
         onClick={() => {
@@ -428,9 +427,8 @@ const IndexPage = () => {
       <div className="separator"></div>
 
       <button
-        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${
-          appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
-        }`}
+        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
+          }`}
         title={"Undo"}
         onClick={() => {
           updateAppState({ ...appState, selectedTool: "undo" });
@@ -460,9 +458,8 @@ const IndexPage = () => {
         </svg>
       </button>
       <button
-        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${
-          appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
-        }`}
+        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
+          }`}
         title={"Redo"}
         onClick={() => {
           updateAppState({ ...appState, selectedTool: "redo" });
@@ -492,7 +489,7 @@ const IndexPage = () => {
         </svg>
       </button>
       <div
-        className={`select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50`}
+        className={`no-drag select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50`}
         onClick={() => {
           updateAppState({ ...appState, selectedTool: "clear" });
         }}

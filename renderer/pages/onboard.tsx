@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-
 const codes = [
   "XKj4-38qX-f3YK-j2xg",
   "SJyY-XQD3-3mvm-FsMi",
@@ -19992,11 +19991,7 @@ const codes = [
 ];
 
 export default function Onboard() {
-  // const [email, setEmail] = useState("");
-  // const [code, setCode] = useState("");
-  // const [valid, setValid] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const limit = 10;
   const emailRef = useRef(null);
   const codeRef = useRef(null);
   const verify = (e: { preventDefault: () => void }) => {
@@ -20017,7 +20012,6 @@ export default function Onboard() {
   };
 
   const gumroad = async (code, email) => {
-    // https://api.gumroad.com/v2/licenses/verify
     axios
       .post("https://api.gumroad.com/v2/licenses/verify", {
         product_permalink: "annotate",
@@ -20027,18 +20021,8 @@ export default function Onboard() {
         email: email,
       })
       .then((response) => {
-        // if (!data?.success) {
-        //   alert('Sorry. Something went wrong.')
-        //   return
-        // }
 
-        const uses = nestedValue(response, "data.uses");
-
-        // if (uses > limit) {
-        //   alert("Sorry, This licence expired!");
-        //   window.electron.ipcRenderer.send("quit-app");
-        //   return;
-        // }
+        // const uses = nestedValue(response, "data.uses");
 
         const refunded = nestedValue(response, "data.purchase.refunded");
 
@@ -20059,13 +20043,9 @@ export default function Onboard() {
           return;
         }
         window.electron.ipcRenderer.send("validate", {
-          id: response.data.purchase.id,
-          name: response.data.purchase.name,
+          email,
+          code
         });
-        // Store.set('verification', response.data)
-        // Store.set('showMenubar', true)
-        // MenuBar.create()
-        // this.emitSuccess()
         setLoading(false);
       })
       .catch((error) => {
@@ -20077,7 +20057,10 @@ export default function Onboard() {
           setLoading(false);
         } else {
           if (codes.includes(code)) {
-            window.electron.ipcRenderer.send("activate");
+            window.electron.ipcRenderer.send("validate", {
+              email,
+              code
+            });
           } else {
             setLoading(false);
             alert("Please check your Licence");
@@ -20238,8 +20221,8 @@ export default function Onboard() {
             y2="72"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#5DB5FF" />
-            <stop offset="1" stop-color="#2B59FF" />
+            <stop stopColor="#5DB5FF" />
+            <stop offset="1" stopColor="#2B59FF" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_5959_265"
@@ -20249,8 +20232,8 @@ export default function Onboard() {
             y2="67.4881"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="white" />
-            <stop offset="1" stop-color="white" stop-opacity="0.78" />
+            <stop stopColor="white" />
+            <stop offset="1" stopColor="white" stopOpacity="0.78" />
           </linearGradient>
         </defs>
       </svg>
@@ -20282,7 +20265,7 @@ export default function Onboard() {
               cy="12"
               r="10"
               stroke="currentColor"
-              stroke-width="4"
+              strokeWidth="4"
             ></circle>
             <path
               className="opacity-75"

@@ -1,4 +1,4 @@
-export interface mainWindowManager {
+export interface toolbarManager {
   open: () => void;
   isOpen: () => boolean;
   toggleView: () => void;
@@ -9,12 +9,11 @@ export interface canvasWindowManager {
   open: () => void;
   isOpen: () => boolean;
   toggleView: () => void;
-  clickThrough: () => void;
-  closeAll: () => void;
+  toggleVisibility: () => void;
   close: () => void;
 }
 
-export interface onboardWindowManager {
+export interface activationWindowManager {
   open: () => boolean;
   close: () => void;
   isOpen: () => boolean;
@@ -31,24 +30,24 @@ export interface feedbackWindowManager {
 }
 
 export class WindowManager {
-  main?: mainWindowManager;
+  toolbar?: toolbarManager;
   canvas?: canvasWindowManager;
-  onboard?: onboardWindowManager;
+  activation?: activationWindowManager;
   feedback?: feedbackWindowManager;
 
   closeAll = () => {
-    this.main?.close();
+    this.toolbar?.close();
     this.canvas?.close();
   };
 
-  setMainWindow = (mainManager: mainWindowManager) => {
-    this.main = mainManager;
+  setToolbar = (toolbarManager: toolbarManager) => {
+    this.toolbar = toolbarManager;
   };
-  setCanvasWindow = (canvasManager: canvasWindowManager) => {
+  setCanvas = (canvasManager: canvasWindowManager) => {
     this.canvas = canvasManager;
   };
-  setOnboardWindow = (onboardManager: onboardWindowManager) => {
-    this.onboard = onboardManager;
+  setActivation = (activationManager: activationWindowManager) => {
+    this.activation = activationManager;
   };
   setFeedbackWindow = (feedbackManager: feedbackWindowManager) => {
     this.feedback = feedbackManager;

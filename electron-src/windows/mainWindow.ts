@@ -41,10 +41,12 @@ const open = () => {
   window.loadURL(url);
   is.development && window.webContents.openDevTools({ mode: "detach" });
   // window.setContentProtection(true);
-  window.setAlwaysOnTop(true, "screen-saver", 1);
+  window.setAlwaysOnTop(true, "screen-saver", 2);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  window.setHiddenInMissionControl(true);
   window.webContents.on("did-finish-load", () => {
     window?.show();
+    windowManager.canvas?.open();
   });
 };
 const close = () => {
@@ -53,9 +55,10 @@ const close = () => {
 const isOpen = () => true;
 const toggleView = () => {
   window?.isVisible() ? window?.hide() : window?.show();
+  windowManager.canvas?.toggleVisibility();
 };
 
-export default windowManager.setMainWindow({
+export default windowManager.setToolbar({
   open,
   close,
   isOpen,

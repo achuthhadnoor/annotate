@@ -1,60 +1,39 @@
-import { app, ipcMain, IpcMainEvent } from "electron";
+import { app, ipcMain } from "electron";
 import prepareNext from "electron-next";
-import Store from "electron-store";
-import AutoLaunch from "auto-launch";
-import { initializeTray } from "./tray";
+import log from "./lib/logger";
 import { windowManager } from "./windows/windowManager";
 import "./windows/load";
-import { getData, updateData } from "./store";
-import { hostname } from "os";
-
-const gotTheLock = app.requestSingleInstanceLock();
-
-if (!gotTheLock) {
-  app.quit();
-}
-
-export const store = new Store();
-export const autoLauncher = new AutoLaunch({
-  name: "Annotate",
-  path: "/Applications/Annotate.app",
-});
-
-app.on("second-instance", () => {
-  app.quit();
-});
-
+import { settings } from "./lib/settings";
+import { initializeTray } from "./tray";
 app.commandLine.appendSwitch("disable-features", "CrossOriginOpenerPolicy");
-
 app.whenReady().then(async () => {
-  await prepareNext("./renderer");
-  if (getData()) {
+  try {
+    await prepareNext("./renderer");
+    log.info("✨ nextjs loaded");
+  } catch (error) {
+    log.info("=============");
+    log.error(error);
+    log.info("=============");
+  }
+  const user = settings.get("user");
+  log.info("user => ", user);
+  if (user.code) {
     if (app.dock) app.dock.hide();
     initializeTray();
-    windowManager.main?.open();
-    windowManager.canvas?.open();
+    windowManager.toolbar?.open();
   } else {
-    windowManager.onboard?.open();
+    windowManager.activation?.open();
   }
 });
 
 ipcMain.on("activate", () => {
   if (app.dock) app.dock.hide();
-  windowManager.onboard?.close();
+  windowManager.activation?.close();
   initializeTray();
-  windowManager.main?.open();
-  windowManager.canvas?.open();
-  // store.set("user-info", JSON.stringify(true));
-  updateData({ name: hostname() });
+  windowManager.toolbar?.open();
 });
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);
-
-// listen the channel `message` and resend the received message to the renderer process
-ipcMain.on("message", (event: IpcMainEvent, message: any) => {
-  setTimeout(() => event.sender.send("message", message), 500);
-});
-
 ipcMain.on("quit-app", () => {
   app.quit();
 });
