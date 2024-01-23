@@ -63,11 +63,12 @@ const openCanvas = (display: Display, activeDisplayId?: number) => {
   const url = is.development
     ? "http://localhost:8000/canvas"
     : format({
-        pathname: join(__dirname, "../../renderer/out/canvas.html"),
+        pathname: join(__dirname, "../../../renderer/out/canvas.html"),
         protocol: "file:",
         slashes: true,
       });
   canvas.loadURL(url);
+  // canvas.webContents.openDevTools();
   canvas.setAlwaysOnTop(true, "floating");
   is.macos && canvas.setHiddenInMissionControl(true);
   canvas.webContents.on("did-finish-load", () => {

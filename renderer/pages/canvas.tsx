@@ -293,13 +293,15 @@ export default function Canvas() {
       }
 
       const index = selectedElement.id;
-      const { id, type, options } = elements[index];
-      if (
-        (action === "drawing" || action === "resizing") &&
-        adjustmentRequired(type)
-      ) {
-        const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
-        updateElement(id, x1, y1, x2, y2, type, options);
+      if (elements[index]) {
+        const { id, type, options } = elements[index];
+        if (
+          (action === "drawing" || action === "resizing") &&
+          adjustmentRequired(type)
+        ) {
+          const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
+          updateElement(id, x1, y1, x2, y2, type, options);
+        }
       }
     }
 
@@ -414,6 +416,7 @@ export default function Canvas() {
   }, [action, selectedElement]);
 
   useEffect(() => {
+    // if(window) window.alert("component loaded ")
     if (!appState.currentFocus) {
       ctxCursorRef.current.clearRect(
         0,

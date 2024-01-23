@@ -4,6 +4,7 @@ import { join } from "path";
 // import macosRelease from "./macos-release";
 import { windowManager } from "./windows/windowManager";
 import { checkIsUpdateAvailable, downloadUpdate } from "./lib/update";
+import { openLogFile } from "./lib/logger";
 
 let tray: Tray | null = null;
 
@@ -83,6 +84,12 @@ const getContextMenu = () => {
       enabled: checkIsUpdateAvailable(),
       click: () => {
         downloadUpdate();
+      },
+    },
+    {
+      label: "open log",
+      click: () => {
+        openLogFile();
       },
     },
     {

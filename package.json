@@ -1,6 +1,6 @@
 {
   "name": "annotate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "main": "main/index.js",
   "productName": "Annotate",
@@ -60,11 +60,7 @@
     "appId": "com.achuth.annotate",
     "afterSign": "electron-builder-notarize",
     "asar": true,
-    "files": [
-      "assets",
-      "main",
-      "renderer/out"
-    ],
+    "files": ["assets", "main", "renderer/out"],
     "mac": {
       "electronUpdaterCompatibility": ">=2.16",
       "category": "public.app-category.productivity",
@@ -76,10 +72,7 @@
       },
       "target": {
         "target": "default",
-        "arch": [
-          "x64",
-          "arm64"
-        ]
+        "arch": ["x64", "arm64"]
       }
     },
     "dmg": {
