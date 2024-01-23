@@ -11,6 +11,7 @@ export const useHistory = (initialState) => {
       const historyCopy = [...history];
       historyCopy[index] = newState;
       setHistory(historyCopy);
+      console.log("history modified")
     } else {
       const updatedState = [...history].slice(0, index + 1);
       setHistory([...updatedState, newState]);
