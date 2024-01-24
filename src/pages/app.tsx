@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { AppContextProvider } from "../context/appContext";
 import "../style.css";
-export default function MyApp({ Component, pageProps }) {
+export default function MyApp({ children }) {
   useEffect(() => {
     if (window) {
       window.addEventListener("keydown", (e: any) => {
@@ -15,13 +15,13 @@ export default function MyApp({ Component, pageProps }) {
       });
     }
     return () => {
-      window.removeEventListener("keydown", () => {});
+      window.removeEventListener("keydown", () => { });
     };
   }, []);
 
   return (
     <AppContextProvider>
-      <Component {...pageProps} />
+      {children}
     </AppContextProvider>
   );
 }

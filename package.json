@@ -1,95 +1,39 @@
 {
-  "name": "annotate",
-  "version": "0.0.2",
-  "private": true,
-  "main": "main/index.js",
-  "productName": "Annotate",
-  "description": "A small utility app to boost your video calls and screen sharing.",
-  "repository": "https://github.com/achuthhadnoor/annotate_www",
-  "release": {
-    "provider": "github",
-    "releaseType": "release"
-  },
-  "author": {
-    "name": "Achuth Hadnoor",
-    "email": "hey@achuth.dev",
-    "url": "https://achuth.dev"
-  },
+  "name": "my-new-app",
+  "productName": "my-new-app",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
   "scripts": {
-    "start": "next build renderer && next start renderer",
-    "clean": "rimraf dist main renderer/out renderer/.next",
-    "dev": "npm run build-electron && electron .",
-    "build-renderer": "next build renderer && next export renderer",
-    "build-electron": "tsc -p electron-src",
-    "build": "npm run build-renderer && npm run build-electron",
-    "pack-app": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder",
-    "type-check": "tsc -p ./renderer/tsconfig.json && tsc -p ./electron-src/tsconfig.json"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "Achuth",
+    "email": "armorachyuth123@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@electron-forge/plugin-vite": "^7.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "electron": "28.1.4",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.25.0",
+    "ts-node": "^10.0.0",
+    "typescript": "~4.5.4"
   },
   "dependencies": {
-    "auto-launch": "^5.0.5",
-    "axios": "^1.3.4",
-    "classnames": "^2.3.2",
-    "electron-log": "^5.0.3",
-    "electron-next": "^3.1.5",
-    "electron-store": "^8.1.0",
-    "electron-updater": "^6.1.7",
-    "electron-util": "^0.17.2",
-    "got": "^12.5.3",
-    "perfect-freehand": "^1.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "roughjs": "^4.5.2"
-  },
-  "devDependencies": {
-    "@types/auto-launch": "^5.0.2",
-    "@types/node": "^14.14.6",
-    "@types/react": "^16.9.9",
-    "@types/react-dom": "^16.9.9",
-    "autoprefixer": "^10.4.13",
-    "electron": "^28.1.4",
-    "electron-builder": "^23.0.3",
-    "electron-builder-notarize": "^1.4.0",
-    "next": "latest",
-    "postcss": "^8.4.21",
-    "rimraf": "^3.0.0",
-    "tailwindcss": "^3.2.4",
-    "typescript": "^4.0.5"
-  },
-  "build": {
-    "appId": "com.achuth.annotate",
-    "afterSign": "electron-builder-notarize",
-    "asar": true,
-    "files": ["assets", "main", "renderer/out"],
-    "mac": {
-      "electronUpdaterCompatibility": ">=2.16",
-      "category": "public.app-category.productivity",
-      "minimumSystemVersion": "10.12.0",
-      "darkModeSupport": true,
-      "hardenedRuntime": true,
-      "extendInfo": {
-        "NSUserNotificationAlertStyle": "alert"
-      },
-      "target": {
-        "target": "default",
-        "arch": ["x64", "arm64"]
-      }
-    },
-    "dmg": {
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "iconSize": 160,
-      "contents": [
-        {
-          "x": 180,
-          "y": 170
-        },
-        {
-          "x": 480,
-          "y": 170,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    }
+    "electron-squirrel-startup": "^1.0.0"
   }
 }
