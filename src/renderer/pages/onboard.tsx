@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 const codes = [
   "XKj4-38qX-f3YK-j2xg",
   "SJyY-XQD3-3mvm-FsMi",
@@ -20001,17 +20001,17 @@ export default function Onboard() {
     setLoading(true);
     gumroad(code, email);
   };
-  const nestedValue = (mainObject, key) => {
+  const nestedValue = (mainObject: AxiosResponse<any, any>, key: string) => {
     try {
       return key
         .split(".")
-        .reduce((obj, property) => obj[property], mainObject);
+        .reduce((obj: { [x: string]: any; }, property: string | number) => obj[property], mainObject);
     } catch (err) {
       return null;
     }
   };
 
-  const gumroad = async (code, email) => {
+  const gumroad = async (code: string, email: any) => {
     axios
       .post("https://api.gumroad.com/v2/licenses/verify", {
         product_permalink: "annotate",
@@ -20070,7 +20070,7 @@ export default function Onboard() {
   };
 
   useEffect(() => {
-    const handleMessage = (_event, { valid }) => {
+    const handleMessage = (_event: any, { valid }: any) => {
       valid && setLoading(false);
       window.electron.ipcRenderer.send("activate");
     };
@@ -20089,15 +20089,14 @@ export default function Onboard() {
   }, []);
 
   return (
-    <div className="dark:text-neutral-50 text-neutral-800 relative align-middle items-center justify-center text-center p-5">
-      <span className="p-2 absolute top-0 w-full drag left-0" />
+    <div className="container">
       <svg
         width="98"
         height="98"
         viewBox="0 0 98 98"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="left-16 relative"
+        style={{position:'relative',left:'-12px'}}
       >
         <g filter="url(#filter0_d_5959_265)">
           <rect
@@ -20237,7 +20236,7 @@ export default function Onboard() {
           </linearGradient>
         </defs>
       </svg>
-      <h1 className=" relative left-10 scale-75 mb-4">
+      <h1 className="">
         <svg
           width="158"
           height="30"
@@ -20252,15 +20251,15 @@ export default function Onboard() {
         </svg>
       </h1>
       {loading ? (
-        <div className="flex justify-center scale-150 mt-10">
+        <div className="">
           <svg
-            className="animate-spin  -ml-1 mr-3 h-5 w-5 text-white"
+            className="spinner"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
           >
             <circle
-              className="opacity-25"
+              className="circle"
               cx="12"
               cy="12"
               r="10"
@@ -20275,22 +20274,24 @@ export default function Onboard() {
           </svg>
         </div>
       ) : (
-        <form className="flex flex-col space-y-4" onSubmit={verify}>
+        <form className="form-container" onSubmit={verify}>
           <input
             name="email"
-            className="bg-transparent text-center ring-2 dark:ring-neutral-600 dark:text-neutral-300 text-neutral-900 ring-neutral-400 rounded p-2"
+            className="input"
             type="email"
             placeholder="email@address.com"
             ref={emailRef}
+            required={true}
           />
           <input
             name="code"
             type="text"
-            className="text-center bg-transparent ring-2 dark:ring-neutral-600 dark:text-neutral-300 text-neutral-600 ring-neutral-400 rounded p-2"
+            className="input"
             placeholder="XXXX-XXXX-XXXX-XXXX"
             ref={codeRef}
+            required={true}
           />
-          <button className="bg-blue-600 rounded p-2 text-neutral-100">
+          <button className="bg-blue-600 rounded p-2 text-neutral-100 submit-btn">
             Activate License
           </button>
         </form>

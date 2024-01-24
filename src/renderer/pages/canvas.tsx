@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.cjs";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 import { useHistory } from "../hooks/useHistory";
-import { ICanvasTools, IElement } from "../interfaces";
+import { ICanvasTools, IElement } from "../utils/interface";
 import {
   adjustElementCoordinates,
   cursorForPosition,
@@ -79,7 +79,7 @@ export default function Canvas() {
     };
   };
 
-  const getSvgPathFromStroke = (stroke) => {
+  const getSvgPathFromStroke = (stroke:any) => {
     if (!stroke.length) return "";
 
     const d = stroke.reduce(
