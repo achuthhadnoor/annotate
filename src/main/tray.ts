@@ -108,8 +108,8 @@ export const initializeTray = () => {
   tray = new Tray(
     // join(__dirname, "../assets/annotateTemplate.png")
     nativeImage.createEmpty()
-    );
-  // tray.setTitle("◉"); // ◎
+  );
+  tray.setTitle("◉"); // ◎
   tray.setToolTip("Annotate");
   tray.setContextMenu(getContextMenu());
 };

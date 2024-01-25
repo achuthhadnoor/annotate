@@ -286,7 +286,8 @@ const IndexPage = () => {
   ];
 
   useEffect(() => {
-    const handleMessage = (_event, args) => { };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const handleMessage = (_event: any, args: any) => { };
     // add a listener to 'message' channel
     window.electron.ipcRenderer.addEventListener("message", handleMessage);
 
@@ -318,10 +319,10 @@ const IndexPage = () => {
     <div id="toolbar" className="px-2">
       <div
         className={cl(
-          "no-drag relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
+          "toggle no-drag relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
           passThrough
-            ? "justify-end bg-blue-200 border-blue-400  border-2"
-            : "justify-start border-neutral-900 dark:border-neutral-100"
+            ? "toggle-active justify-end bg-blue-200 border-blue-400  border-2"
+            : "toggle-deactive justify-start border-neutral-900 dark:border-neutral-100"
         )}
         onClick={() => {
           updateGlobalState("passthrough");
@@ -329,8 +330,8 @@ const IndexPage = () => {
       >
         <span
           className={cl(
-            "inline-block rounded-full h-4 w-4  ",
-            passThrough ? " bg-blue-900" : "bg-neutral-900 dark:bg-neutral-200"
+            "inline-block rounded-full h-4 w-4  toggle-circle",
+            passThrough ? "tc-deactive" : "tc-active"
           )}
         />
       </div>
@@ -338,7 +339,7 @@ const IndexPage = () => {
         <div
           className={cl(
             appState.primaryColor === appState.activeColor
-              ? "color border-[1px] border-black dark:border-white shadow-sm"
+              ? "color color-active"
               : "color"
           )}
           id="primary-color"
@@ -349,7 +350,7 @@ const IndexPage = () => {
         <div
           className={cl(
             appState.secondaryColor === appState.activeColor
-              ? "color border-[1px] border-black dark:border-white shadow-sm"
+              ? "color color-active"
               : "color"
           )}
           id="secondary-color"
@@ -363,7 +364,7 @@ const IndexPage = () => {
         <div
           className={cl(
             appState.ternaryColor === appState.activeColor
-              ? "color border-[1px] border-black dark:border-white shadow-sm"
+              ? "color color-active"
               : "color"
           )}
           id="ternary-color"
@@ -376,9 +377,9 @@ const IndexPage = () => {
       {tools.map((tool) => (
         <button
           key={`tool-${tool.id}`}
-          className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.selectedTool === tool.id ||
+          className={`tool p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.selectedTool === tool.id ||
             (appState.cursorFocus && tool.id === "cursor-focus")
-            ? "dark:text-neutral-50 text-neutral-900"
+            ? "active-tool-color"
             : ""
             }`}
           id={tool.id}
@@ -416,8 +417,8 @@ const IndexPage = () => {
       />
       <span
         className={cl(
-          "p-2 rounded  border-2 border-neutral-800 dark:border-neutral-100 no-drag",
-          appState.fill && "bg-indigo-500"
+          "p-2 rounded  border-2 border-neutral-800 dark:border-neutral-100 fill-box no-drag",
+          appState.fill && "fill-box-fill"
         )}
         onClick={() => {
           updateAppState({ ...appState, fill: !appState.fill });
@@ -427,7 +428,7 @@ const IndexPage = () => {
       <div className="separator"></div>
 
       <button
-        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
+        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 tool ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900 active-tool-color"
           }`}
         title={"Undo"}
         onClick={() => {
@@ -458,7 +459,7 @@ const IndexPage = () => {
         </svg>
       </button>
       <button
-        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900"
+        className={`p-2 select-none cursor-default text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-50 tool ${appState.undoEnabled && "dark:text-neutral-50 text-neutral-900 .active-tool-color"
           }`}
         title={"Redo"}
         onClick={() => {

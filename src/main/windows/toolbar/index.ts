@@ -3,13 +3,14 @@ import { is } from "electron-util";
 import { join } from "path";
 import { format } from "url";
 import { windowManager } from "../windowManager";
+import log from "../../lib/logger";
 
 let window: BrowserWindow | null = null;
 
 const open = () => {
   const { bounds } = screen.getPrimaryDisplay();
   const { height, width } = bounds;
-  console.log("yooo",join(__dirname, "./preload.js"))
+  console.log("yooo", join(__dirname, "./preload.js"));
   window = new BrowserWindow({
     y: height - 200,
     x: width / 2 - 450,
@@ -31,12 +32,26 @@ const open = () => {
       preload: join(__dirname, "./preload.js"),
     },
   });
-  console.log("main url" , MAIN_WINDOW_VITE_DEV_SERVER_URL);
-  
+  log.info("main url", MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  log.info(
+    "main url",
+    format({
+      pathname: join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      ),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
+
   const url = MAIN_WINDOW_VITE_DEV_SERVER_URL
     ? MAIN_WINDOW_VITE_DEV_SERVER_URL
     : format({
-        pathname: join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
+        pathname: join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        ),
         protocol: "file:",
         slashes: true,
       });
@@ -46,7 +61,7 @@ const open = () => {
   // window.setContentProtection(true);
   window.setAlwaysOnTop(true, "screen-saver", 2);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  // window.setHiddenInMissionControl(true);
+  window.setHiddenInMissionControl(true);
   window.webContents.on("did-finish-load", () => {
     window?.show();
     windowManager.canvas?.open();

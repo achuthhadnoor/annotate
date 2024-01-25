@@ -72,6 +72,9 @@ button {
   border-radius: 50%;
   border: 1px solid transparent;
 }
+.color-active {
+  border: 1px solid #fff;
+}
 
 #primary-color {
   background: #d479ff;
@@ -87,6 +90,33 @@ button {
 
 .active {
   border-radius: 5px;
+}
+.tool {
+  padding: 0.3rem;
+  cursor: default;
+  user-select: none;
+  color: #aaa;
+}
+.tool:hover {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.active-tool-color {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.fill-box {
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 2px solid #aaa;
+  height: 10px;
+  width: 10px;
+}
+.fill-box-fill {
+  background-color: #6480ff;
 }
 
 .slider {
@@ -139,7 +169,8 @@ button {
 }
 
 @media (prefers-color-scheme: light) {
-  .toolbar-icon {}
+  .toolbar-icon {
+  }
 
   .toolbar-icon {
     color: #808080;
@@ -186,7 +217,6 @@ button {
   }
 }
 
-
 .container {
   text-align: center;
   padding: 1.2em;
@@ -230,7 +260,9 @@ button {
   height: 1.25rem;
   animation: spin 1s linear infinite;
 }
-.circle{opacity: 0.25; }
+.circle {
+  opacity: 0.25;
+}
 
 @keyframes spin {
   from {
@@ -240,4 +272,38 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+.toggle {
+  display: flex;
+  position: relative;
+  align-items: center;
+  -webkit-app-region: no-drag;
+  height: 30px;
+  width: 50px;
+  border: 1px solid #60a5fa;
+  border-radius: 25px;
+  padding: 2px 5px;
+  transition: all 0.35s ease-in-out;
+}
+.toggle-active {
+  background-color: #bfdbfe;
+  justify-content: right;
+  transition: all 0.35s ease-in-out;
+}
+.toggle-deactive {
+  background: transparent;
+  transition: all 0.35s ease-in-out;
+}
+.toggle-circle {
+  height: 25px;
+  width: 25px;
+  border-radius: 100px;
+  transition: all 0.35s ease-in-out;
+}
+.tc-active {
+  background-color: #bfdbfe;
+}
+.tc-deactive {
+  background: #6480ff;
 }

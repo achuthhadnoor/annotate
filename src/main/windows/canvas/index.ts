@@ -63,14 +63,17 @@ const openCanvas = (display: Display, activeDisplayId?: number) => {
   const url = MAIN_WINDOW_VITE_DEV_SERVER_URL
     ? `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/canvas`
     : format({
-        pathname: join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
+        pathname: join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        ),
         protocol: "file:",
         slashes: true,
       });
   canvas.loadURL(url);
-  canvas.webContents.openDevTools();
+  // canvas.webContents.openDevTools();
   canvas.setAlwaysOnTop(true, "floating");
-  // is.macos && canvas.setHiddenInMissionControl(true);
+  is.macos && canvas.setHiddenInMissionControl(true);
   canvas.webContents.on("did-finish-load", () => {
     const isActive = activeDisplayId === id;
     const displayInfo = {
