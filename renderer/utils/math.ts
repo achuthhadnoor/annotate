@@ -86,12 +86,12 @@ export const getElementAtPosition = (x, y, elements) => {
 };
 
 export const adjustElementCoordinates = (element) => {
-  const { type, x1, y1, x2, y2 } = element;
+  const { type, x1, y1, x2, y2, x, y, height, width } = element;
   if (type === "rectangle") {
-    const minX = Math.min(x1, x2);
-    const maxX = Math.max(x1, x2);
-    const minY = Math.min(y1, y2);
-    const maxY = Math.max(y1, y2);
+    const minX = Math.min(x, width + x);
+    const maxX = Math.max(x, width + x);
+    const minY = Math.min(y, y + height);
+    const maxY = Math.max(y, y + height);
     return { x1: minX, y1: minY, x2: maxX, y2: maxY };
   } else {
     if (x1 < x2 || (x1 === x2 && y1 < y2)) {

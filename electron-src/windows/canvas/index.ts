@@ -51,7 +51,7 @@ const openCanvas = (display: Display, activeDisplayId?: number) => {
     frame: false,
     transparent: true,
     show: false,
-    alwaysOnTop: true,
+    // alwaysOnTop: true,
     skipTaskbar: true,
     webPreferences: {
       nodeIntegration: true,
@@ -69,8 +69,8 @@ const openCanvas = (display: Display, activeDisplayId?: number) => {
       });
   canvas.loadURL(url);
   // canvas.webContents.openDevTools();
-  canvas.setAlwaysOnTop(true, "floating");
-  is.macos && canvas.setHiddenInMissionControl(true);
+  // canvas.setAlwaysOnTop(true, "floating");
+  // is.macos && canvas.setHiddenInMissionControl(true);
   canvas.webContents.on("did-finish-load", () => {
     const isActive = activeDisplayId === id;
     const displayInfo = {
