@@ -1,6 +1,4 @@
-import getStroke from "perfect-freehand";
 import React, { useEffect, useRef, useState } from "react";
-import rough from "roughjs/bundled/rough.cjs";
 import { useAppState, useUpdateAppState } from "../context/appContext";
 import { useHistory } from "../hooks/useHistory";
 import { ICanvasTools, IElement } from "../interfaces";
@@ -22,47 +20,25 @@ export default function Canvas() {
     useHistory([]);
   const [tool, setTool] = useState<ICanvasTools>("brush");
   const [selectedElement, setSelectedElement] = useState(null);
-  const textAreaRef = useRef(null);
   const canvasRef = useRef(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
   const canvasCursorRef = useRef(null);
   const ctxCursorRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const roughCanvasRef = useRef(null);
-
-  const generator = rough.generator();
-
   const createElement = (newElement: IElement) => {
-    let roughElement;
+    let canvasElement;
     const { id, type, text, x1, x2, y1, y2, options } = newElement;
     switch (newElement.type) {
       case "line":
-        roughElement = generator.line(x1, y1, x2, y2, {
-          stroke: options.stroke,
-          strokeWidth: options.strokeWidth,
-        });
         break;
       case "rectangle":
-        roughElement = generator.rectangle(x1, y1, x2 - x1, y2 - y1, {
-          roughness: 2.8,
-          stroke: options.stroke,
-          strokeWidth: options.strokeWidth,
-          fill: options.fill ? appState.activeColor : "",
-          fillWidth: options.strokeWidth,
-        });
         break;
       case "circle":
         if (!options.fill) {
-          roughElement = generator.circle(x1, y1, x2 - x1, {
-            stroke: options.stroke,
-            strokeWidth: options.strokeWidth,
-          });
+
         } else {
-          roughElement = generator.circle(x1, y1, x2 - x1, {
-            fill: options.stroke,
-            fillWeight: options.fillWeight, // thicker lines for hachure
-          });
+
         }
         break;
       case "brush":
@@ -75,49 +51,19 @@ export default function Canvas() {
     }
     return {
       ...newElement,
-      roughElement,
+      canvasElement,
     };
   };
 
-  const getSvgPathFromStroke = (stroke) => {
-    if (!stroke.length) return "";
-
-    const d = stroke.reduce(
-      (acc, [x0, y0], i, arr) => {
-        const [x1, y1] = arr[(i + 1) % arr.length];
-        acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
-        return acc;
-      },
-      ["M", ...stroke[0], "Q"]
-    );
-
-    d.push("Z");
-    return d.join(" ");
-  };
 
   const drawElementOnCanvas = (roughCanvas, context, element: IElement) => {
     switch (element.type) {
       case "line":
       case "rectangle":
       case "circle":
-        roughCanvas.draw(element.roughElement);
-        break;
       case "brush":
       case "eraser":
-        const stroke = getSvgPathFromStroke(
-          getStroke(element.points, {
-            size: element.options.strokeWidth,
-          })
-        );
-        context.fillStyle =
-          element.type === "eraser" ? "#00000042" : element.options.stroke;
-        // ctxCursorRef.current.fillStyle = "#00000087";
-        context.fill(new Path2D(stroke));
-        break;
       case "text":
-        context.textBaseline = "top";
-        context.font = "24px sans-serif";
-        context.fillText(element.text, element.x1, element.y1);
         break;
       default:
         throw new Error(`Type not recognised: ${element.type}`);
@@ -137,40 +83,13 @@ export default function Canvas() {
       case "line":
       case "rectangle":
       case "circle":
-        elementsCopy[id] = createElement({ id, x1, y1, x2, y2, type, options });
-        break;
       case "brush":
       case "eraser":
-        elementsCopy[id].points = [
-          ...elementsCopy[id].points,
-          { x: x2, y: y2 },
-        ];
-        break;
       case "text":
-        if (textAreaRef.current) {
-          let ref: any = textAreaRef.current;
-          const textWidth = ref
-            .getContext("2d")
-            .measureText(options.text).width;
-          const textHeight = 24;
-          elementsCopy[id] = {
-            ...createElement({
-              id,
-              x1,
-              y1,
-              x2: x1 + textWidth,
-              y2: y1 + textHeight,
-              type,
-              options,
-            }),
-            text: options.text,
-          };
-        }
         break;
       default:
         throw new Error(`Type not recognised: ${type}`);
     }
-
     setElements(elementsCopy, true);
   };
 
@@ -379,11 +298,9 @@ export default function Canvas() {
       const context: any = canvas.getContext("2d");
       ctxRef.current = context;
 
-      const roughCanvas = rough.canvas(canvas);
-      roughCanvasRef.current = roughCanvas;
       elements.forEach((element) => {
         if (action === "writing" && selectedElement.id === element.id) return;
-        drawElementOnCanvas(roughCanvas, context, element);
+        drawElementOnCanvas(canvas, context, element);
       });
     }
   }, [elements, action, selectedElement]);
@@ -406,13 +323,13 @@ export default function Canvas() {
   }, [undo, redo]);
 
   useEffect(() => {
-    if (textAreaRef.current) {
-      const textArea: any = textAreaRef.current;
-      if (action === "writing") {
-        textArea?.focus();
-        textArea.value = selectedElement.text;
-      }
-    }
+    // if (textAreaRef.current) {
+    //   const textArea: any = textAreaRef.current;
+    //   if (action === "writing") {
+    //     textArea?.focus();
+    //     textArea.value = selectedElement.text;
+    //   }
+    // }
   }, [action, selectedElement]);
 
   useEffect(() => {
@@ -470,32 +387,12 @@ export default function Canvas() {
         onMouseUp={handleMouseUp}
       />
       <canvas
+        id="canvas"
         ref={canvasRef}
-        id="canvas-draw"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-      {action === "writing" ? (
-        <textarea
-          ref={textAreaRef}
-          onBlur={handleBlur}
-          style={{
-            position: "fixed",
-            // top: selectedElement.y1 - 2,
-            // left: selectedElement.x1,
-            font: "24px sans-serif",
-            margin: 0,
-            padding: 0,
-            border: 0,
-            outline: 0,
-            // resize: "auto",
-            overflow: "hidden",
-            whiteSpace: "pre",
-            background: "transparent",
-          }}
-        />
-      ) : null}
     </>
   );
 }
