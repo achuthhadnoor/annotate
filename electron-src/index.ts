@@ -1,4 +1,4 @@
-import { app, ipcMain } from "electron";
+import { app, globalShortcut, ipcMain } from "electron";
 import prepareNext from "electron-next";
 import log from "./lib/logger";
 import { windowManager } from "./windows/windowManager";
@@ -35,5 +35,6 @@ ipcMain.on("activate", () => {
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);
 ipcMain.on("quit-app", () => {
+  globalShortcut.unregisterAll();
   app.quit();
 });

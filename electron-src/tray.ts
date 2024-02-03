@@ -1,4 +1,4 @@
-import { app, Menu, nativeImage, shell, Tray } from "electron";
+import { app, globalShortcut, Menu, nativeImage, shell, Tray } from "electron";
 import { MenuItemConstructorOptions } from "electron/main";
 import { join } from "path";
 // import macosRelease from "./macos-release";
@@ -109,4 +109,7 @@ export const initializeTray = () => {
   // tray.setTitle("◉"); // ◎
   tray.setToolTip("Annotate");
   tray.setContextMenu(getContextMenu());
+  globalShortcut.register("meta+shift+7", () => {
+    windowManager.toolbar?.toggleView();
+  });
 };
