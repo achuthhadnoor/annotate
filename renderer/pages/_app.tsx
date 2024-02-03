@@ -15,7 +15,7 @@ export default function MyApp({ Component, pageProps }) {
       });
     }
     return () => {
-      window.removeEventListener("keydown", () => {});
+      window.removeEventListener("keydown", () => { });
     };
   }, []);
 

@@ -166,7 +166,6 @@ export default function Canvas() {
     setElements(elementsCopy, true);
   };
 
-
   const handleMouseDown = (event) => {
     if (appState.cursorFocus) {
       highlight(event);
@@ -215,7 +214,6 @@ export default function Canvas() {
       setAction(tool === "text" ? "writing" : "drawing");
     }
   };
-
 
   const handleMouseMove = (event) => {
     if (appState.cursorFocus) {
@@ -294,7 +292,6 @@ export default function Canvas() {
     setSelectedElement(null);
   };
 
-
   const handleBlur = (event) => {
     const { id, x1, y1, type, options } = selectedElement;
     setAction("none");
@@ -304,7 +301,6 @@ export default function Canvas() {
       text: event.target.value,
     });
   };
-
 
   const getMousePos = (canvas, evt) => {
     var rect = canvas.getBoundingClientRect();
@@ -441,6 +437,57 @@ export default function Canvas() {
     }
     setTool(appState.selectedTool);
   }, [appState]);
+
+  useEffect(() => {
+    if (window) {
+      window.addEventListener("keyup", (e: any) => {
+        if (e.key === "1") {
+          updateAppState({
+            ...appState,
+            activeColor: appState.primaryColor,
+          });
+        } else if (e.key === "2") {
+          updateAppState({
+            ...appState,
+            activeColor: appState.secondaryColor,
+          });
+        } else if (e.key === "3") {
+          updateAppState({
+            ...appState,
+            activeColor: appState.ternaryColor,
+          });
+        } else if (e.key === "b") {
+          updateAppState({
+            ...appState,
+            selectedTool: "brush"
+          });
+        } else if (e.key === "l") {
+          updateAppState({
+            ...appState,
+            selectedTool: "line"
+          });
+        } else if (e.key === "c") {
+          updateAppState({
+            ...appState,
+            selectedTool: "circle"
+          });
+        } else if (e.key === "r") {
+          updateAppState({
+            ...appState,
+            selectedTool: "rectangle"
+          });
+        } else if (e.key === "f") {
+          updateAppState({
+            ...appState,
+            cursorFocus: !appState.cursorFocus
+          });
+        }
+      });
+    }
+    return () => {
+      window.removeEventListener("keyup", () => { });
+    };
+  }, []);
 
   return (
     <>

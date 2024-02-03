@@ -116,52 +116,52 @@ const IndexPage = () => {
         </svg>
       ),
     },
-    {
-      title: "Selection",
-      id: "selection",
-      icon: () => (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g clipPath="url(#clip0_5778_274)">
-            <path
-              d="M10.834 11.8333L14.1673 15.1666"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M5 6L9.16618 16L10.6453 11.6453L15 10.1662L5 6Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <rect
-              x="0.75"
-              y="0.75"
-              width="18.5"
-              height="18.5"
-              rx="1.25"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-              strokeDasharray="2 2"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_5778_274">
-              <rect width="20" height="20" fill="currentColor" />
-            </clipPath>
-          </defs>
-        </svg>
-      ),
-    },
+    // {
+    //   title: "Selection",
+    //   id: "selection",
+    //   icon: () => (
+    //     <svg
+    //       width="20"
+    //       height="20"
+    //       viewBox="0 0 20 20"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <g clipPath="url(#clip0_5778_274)">
+    //         <path
+    //           d="M10.834 11.8333L14.1673 15.1666"
+    //           stroke="currentColor"
+    //           strokeWidth="1.5"
+    //           strokeLinecap="round"
+    //           strokeLinejoin="round"
+    //         />
+    //         <path
+    //           d="M5 6L9.16618 16L10.6453 11.6453L15 10.1662L5 6Z"
+    //           stroke="currentColor"
+    //           strokeWidth="1.5"
+    //           strokeLinecap="round"
+    //           strokeLinejoin="round"
+    //         />
+    //         <rect
+    //           x="0.75"
+    //           y="0.75"
+    //           width="18.5"
+    //           height="18.5"
+    //           rx="1.25"
+    //           stroke="currentColor"
+    //           strokeWidth="1.5"
+    //           strokeLinejoin="round"
+    //           strokeDasharray="2 2"
+    //         />
+    //       </g>
+    //       <defs>
+    //         <clipPath id="clip0_5778_274">
+    //           <rect width="20" height="20" fill="currentColor" />
+    //         </clipPath>
+    //       </defs>
+    //     </svg>
+    //   ),
+    // },
     // {
     //   title: "Eraser",
     //   id: "eraser",
@@ -315,7 +315,7 @@ const IndexPage = () => {
     }
   };
   return (
-    <div id="toolbar" className="px-2">
+    <div id="toolbar" className="px-2 flex justify-between">
       <div
         className={cl(
           "no-drag relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",
@@ -403,7 +403,7 @@ const IndexPage = () => {
       </span>
       <input
         type={"range"}
-        max="50"
+        max="10"
         className="slider h-5"
         value={appState.stroke}
         min="3"
