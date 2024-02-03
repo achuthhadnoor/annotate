@@ -38,6 +38,8 @@ export default function Canvas() {
           type,
           x: Math.min(x1, x2),
           y: Math.min(y1, y2),
+          x3: x1,   // Initial mouse down x coordinate
+          y3: y1,   // Initial mouse down y coordinate
           width: x2 - x1,
           height: y2 - y1,
           options: {
@@ -73,16 +75,15 @@ export default function Canvas() {
     };
   };
 
-
-
   const drawElementOnCanvas = (canvases, context, element) => {
     const { type, options } = element;
 
     // Set up canvas context based on element options
     context.strokeStyle = options.stroke;
     context.lineWidth = options.strokeWidth;
+    debugger
     if (options.fill) {
-      context.fillStyle = options.fill;
+      context.fillStyle = options.stroke;
     }
 
     switch (type) {
@@ -142,16 +143,10 @@ export default function Canvas() {
           case "line":
             return { ...element, x1, y1, x2, y2, options };
           case "rectangle":
-            console.log('====================================');
-            console.log(id, x1, y1, x2, y2, type, options);
-            console.log('====================================');
-            const width = Math.abs(x2 - x1);
-            const height = Math.abs(y2 - y1);
-            const newX = x2 < x1 ? x2 : x1;
-            const newY = y2 < y1 ? y2 : y1;
-            if (Number.isNaN(width)) {
-              debugger;
-            }
+            let width = Math.abs(x2 - element.x3);
+            let height = Math.abs(y2 - element.y3);
+            let newX = x2 < element.x3 ? x2 : x1;
+            let newY = y2 < element.y3 ? y2 : y1;
             return { ...element, x: newX, y: newY, width, height, options };
           case "circle":
             const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 2;
@@ -162,7 +157,8 @@ export default function Canvas() {
           case "eraser":
             return { ...element, points: [...element.points, { x: x2, y: y2 }], options };
           case "text":
-            return { ...element, x1, y1, text, options };
+            // return { ...element, x1, y1, text, options };
+            break
           default:
             throw new Error(`Type not recognised: ${type}`);
         }
@@ -287,6 +283,7 @@ export default function Canvas() {
       if (elements[index]) {
         const { id, type, options } = elements[index];
         if ((action === "drawing" || action === "resizing") && adjustmentRequired(type)) {
+          debugger;
           const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
           updateElement(id, x1, y1, x2, y2, type, options);
         }
