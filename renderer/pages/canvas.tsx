@@ -81,7 +81,6 @@ export default function Canvas() {
     // Set up canvas context based on element options
     context.strokeStyle = options.stroke;
     context.lineWidth = options.strokeWidth;
-    debugger
     if (options.fill) {
       context.fillStyle = options.stroke;
     }
@@ -149,10 +148,8 @@ export default function Canvas() {
             let newY = y2 < element.y3 ? y2 : y1;
             return { ...element, x: newX, y: newY, width, height, options };
           case "circle":
-            const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 2;
-            const centerX = (x1 + x2) / 2;
-            const centerY = (y1 + y2) / 2;
-            return { ...element, x: centerX, y: centerY, radius, options };
+            const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            return { ...element, x: x1, y: y1, radius, options };
           case "brush":
           case "eraser":
             return { ...element, points: [...element.points, { x: x2, y: y2 }], options };
@@ -237,7 +234,9 @@ export default function Canvas() {
       const { x1, y1, x, y, options } = elements[index];
       switch (tool) {
         case 'rectangle':
-          // case 'circle':
+          updateElement(index, x, y, clientX, clientY, tool, options);
+          break;
+        case 'circle':
           updateElement(index, x, y, clientX, clientY, tool, options);
           break;
         default:
@@ -283,7 +282,6 @@ export default function Canvas() {
       if (elements[index]) {
         const { id, type, options } = elements[index];
         if ((action === "drawing" || action === "resizing") && adjustmentRequired(type)) {
-          debugger;
           const { x1, y1, x2, y2 } = adjustElementCoordinates(elements[index]);
           updateElement(id, x1, y1, x2, y2, type, options);
         }
