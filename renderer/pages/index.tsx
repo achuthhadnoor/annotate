@@ -8,6 +8,8 @@ declare global {
 }
 const IndexPage = () => {
   const [passThrough, setPassThrough] = useState(true);
+  const [windowsMode, setWindowsMode] = useState(false);
+
   const appState = useAppState();
   const updateAppState = useUpdateAppState();
   const tools = [
@@ -286,10 +288,11 @@ const IndexPage = () => {
   ];
 
   useEffect(() => {
-    const handleMessage = (_event, args) => { };
-    // add a listener to 'message' channel
+    const handleMessage = (_event, args) => {
+      args.platform && setWindowsMode(true)
+    };
     window.electron.ipcRenderer.addEventListener("message", handleMessage);
-
+    window.electron.ipcRenderer.send("platform")
     return () => {
       window.electron.ipcRenderer.removeEventListener("message", handleMessage);
     };
@@ -315,7 +318,7 @@ const IndexPage = () => {
     }
   };
   return (
-    <div id="toolbar" className="px-2 flex justify-between">
+    <div id="toolbar" className={cl(windowsMode && "dark:bg-black bg-white", "px-2 flex justify-between")}>
       <div
         className={cl(
           "no-drag relative transition-all delay-75 h-7 w-12 border-2  p-1 rounded-full flex align-middle",

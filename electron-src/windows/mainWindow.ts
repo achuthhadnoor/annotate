@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from "electron";
+import { BrowserWindow, ipcMain, screen } from "electron";
 import { is } from "electron-util";
 import { join } from "path";
 import { format } from "url";
@@ -48,7 +48,11 @@ const open = () => {
     window?.show();
     windowManager.canvas?.open();
   });
+  ipcMain.on("platform", () => {
+    window?.webContents.send("message", { platform: is.windows });
+  });
 };
+
 const close = () => {
   window?.close();
 };
