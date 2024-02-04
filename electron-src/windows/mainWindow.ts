@@ -40,7 +40,7 @@ const open = () => {
   // window.setContentProtection(true);
   window.setAlwaysOnTop(true, "screen-saver", 2);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  window.setHiddenInMissionControl(true);
+  is.macos && window.setHiddenInMissionControl(true);
   window.webContents.on("did-finish-load", () => {
     window?.show();
     windowManager.canvas?.open();

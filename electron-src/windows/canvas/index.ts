@@ -182,7 +182,7 @@ app.on("before-quit", closeAllCanvases);
 
 app.on("browser-window-created", () => {
   if (!isCanvasOpen()) {
-    app.dock.show();
+    app.dock?.show();
   }
 });
 
