@@ -407,12 +407,12 @@ export default function Canvas() {
     switch (appState.selectedTool) {
       case "clear":
         clear();
-        updateAppState({ ...appState, selectedTool: tool });
+        updateAppState({ ...getState(), selectedTool: tool });
         return;
       case "undo":
         undo();
         updateAppState({
-          ...appState,
+          ...getState(),
           undoEnabled: undoEnabled(),
           selectedTool: tool,
         });
@@ -420,14 +420,14 @@ export default function Canvas() {
       case "redo":
         redo();
         updateAppState({
-          ...appState,
+          ...getState(),
           redoEnabled: redoEnabled(),
           selectedTool: tool,
         });
         return;
       case "stroke":
         // updateStroke();
-        updateAppState({ ...appState, selectedTool: tool });
+        updateAppState({ ...getState(), selectedTool: tool });
         return;
       case "text":
         setAction("writing");
@@ -438,56 +438,59 @@ export default function Canvas() {
     setTool(appState.selectedTool);
   }, [appState]);
 
+  const getState = () => appState;
+
+  const shortcuts = (e: any) => {
+    if (e.key === "1") {
+      updateAppState({
+        ...getState(),
+        activeColor: appState.primaryColor,
+      });
+    } else if (e.key === "2") {
+      updateAppState({
+        ...getState(),
+        activeColor: appState.secondaryColor,
+      });
+    } else if (e.key === "3") {
+      updateAppState({
+        ...getState(),
+        activeColor: appState.ternaryColor,
+      });
+    } else if (e.key === "b") {
+      updateAppState({
+        ...getState(),
+        selectedTool: "brush"
+      });
+    } else if (e.key === "l") {
+      updateAppState({
+        ...getState(),
+        selectedTool: "line"
+      });
+    } else if (e.key === "c") {
+      updateAppState({
+        ...getState(),
+        selectedTool: "circle"
+      });
+    } else if (e.key === "r") {
+      updateAppState({
+        ...getState(),
+        selectedTool: "rectangle"
+      });
+    } else if (e.key === "f") {
+      updateAppState({
+        ...getState(),
+        cursorFocus: !appState.cursorFocus
+      });
+    }
+  }
   useEffect(() => {
     if (window) {
-      window.addEventListener("keyup", (e: any) => {
-        if (e.key === "1") {
-          updateAppState({
-            ...appState,
-            activeColor: appState.primaryColor,
-          });
-        } else if (e.key === "2") {
-          updateAppState({
-            ...appState,
-            activeColor: appState.secondaryColor,
-          });
-        } else if (e.key === "3") {
-          updateAppState({
-            ...appState,
-            activeColor: appState.ternaryColor,
-          });
-        } else if (e.key === "b") {
-          updateAppState({
-            ...appState,
-            selectedTool: "brush"
-          });
-        } else if (e.key === "l") {
-          updateAppState({
-            ...appState,
-            selectedTool: "line"
-          });
-        } else if (e.key === "c") {
-          updateAppState({
-            ...appState,
-            selectedTool: "circle"
-          });
-        } else if (e.key === "r") {
-          updateAppState({
-            ...appState,
-            selectedTool: "rectangle"
-          });
-        } else if (e.key === "f") {
-          updateAppState({
-            ...appState,
-            cursorFocus: !appState.cursorFocus
-          });
-        }
-      });
+      window.addEventListener("keyup", shortcuts);
     }
     return () => {
       window.removeEventListener("keyup", () => { });
     };
-  }, []);
+  }, [appState]);
 
   return (
     <>

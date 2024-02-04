@@ -18,9 +18,9 @@ app.whenReady().then(async () => {
   const user = settings.get("user");
   log.info("user => ", user);
   if (user?.code) {
-    if (app.dock) app.dock.hide();
     initializeTray();
     windowManager.toolbar?.open();
+    if (app.dock) app.dock.hide();
   } else {
     windowManager.activation?.open();
   }
